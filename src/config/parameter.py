@@ -255,8 +255,7 @@ class Parameter:
             self.logger.info(f"chunk 参数已设置为 {chunk}", False)
             return chunk
         self.logger.warning(
-            f"chunk 参数 {chunk} 设置错误，程序将使用默认值：{
-            1024 * 1024}", False)
+            f"chunk 参数 {chunk} 设置错误，程序将使用默认值：{ 1024 * 1024}", False)
         return 1024 * 1024
 
     def __check_max_retry(self, max_retry: int) -> int:

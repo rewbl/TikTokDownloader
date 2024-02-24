@@ -251,18 +251,10 @@ class Extractor:
 
     @staticmethod
     def time_conversion(time_: int) -> str:
-        return f"{
-        time_ //
-        1000 //
-        3600:0>2d}:{
-        time_ //
-        1000 %
-        3600 //
-        60:0>2d}:{
-        time_ //
-        1000 %
-        3600 %
-        60:0>2d}"
+        hours = (time_ // 1000) // 3600
+        minutes = (time_ // 1000) % 3600 // 60
+        seconds = (time_ // 1000) % 3600 % 60
+        return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
     def __extract_text_extra(self, item: dict, data: SimpleNamespace):
         text = [
@@ -524,8 +516,7 @@ class Extractor:
             data, "custom_verify", "无")
         container.cache["enterprise"] = self.safe_extract(
             data, "enterprise_verify_reason", "无")
-        container.cache["url"] = f"https://www.douyin.com/user/{
-        container.cache["sec_uid"]}"
+        container.cache["url"] = f"https://www.douyin.com/user/{container.cache['sec_uid']}"
         container.all_data.append(container.cache)
 
     def __search(self, data: list[dict], recorder, tab: int) -> list[dict]:

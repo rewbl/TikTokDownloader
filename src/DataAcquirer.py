@@ -129,6 +129,9 @@ class Acquirer:
             data: list[dict],
             start: int = None,
             end: int = None):
+        if not data:
+            return
+
         for i in data[start:end]:
             self.response.append(i)
 
@@ -834,10 +837,7 @@ class Search(Acquirer):
     def run(self):
         data = self.search_params[self.tab]
         self.PC_headers["Referer"] = (
-            f"https://www.douyin.com/search/{
-            quote(
-                self.keyword)}?" f"source=switch_tab&type={
-            data.type}")
+            f"https://www.douyin.com/search/{            quote(                self.keyword)}?" f"source=switch_tab&type={            data.type}")
         if self.tab in {2, 3}:
             deal = self._run_user_live
         elif self.tab in {0, 1}:
@@ -1031,7 +1031,7 @@ class Collection(Acquirer):
         params = self.params.copy()
         self.deal_url_params(params)
         form = {
-            "count": "10",
+            "count": "30",
             "cursor": self.cursor,
         }
         if not (
@@ -1061,8 +1061,7 @@ class Collection(Acquirer):
             self.response.append({"author": info})
         else:
             temp_data = timestamp()
-            self.log.warning(f"owner_url 参数未设置 或者 获取账号数据失败，本次运行将临时使用 {
-            temp_data} 作为账号昵称和 UID")
+            self.log.warning(f"owner_url 参数未设置 或者 获取账号数据失败，本次运行将临时使用 {            temp_data} 作为账号昵称和 UID")
             temp_dict = {
                 "author": {
                     "nickname": temp_data,

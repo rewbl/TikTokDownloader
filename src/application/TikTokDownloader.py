@@ -69,8 +69,7 @@ def start_cookie_task(function):
 
 
 class TikTokDownloader:
-    NAME = f"TikTokDownloader v{VERSION_MAJOR}.{
-    VERSION_MINOR}{" Beta" if VERSION_BETA else ""}"
+    NAME = f"TikTokDownloader v{VERSION_MAJOR}.{VERSION_MINOR}{'Beta' if VERSION_BETA else ''}"
     WIDTH = 50
     LINE = ">" * WIDTH
 
@@ -164,8 +163,7 @@ class TikTokDownloader:
         return True
 
     def version(self):
-        self.console.print(f"{self.LINE}\n\n\n{self.NAME.center(
-            self.WIDTH)}\n\n\n{self.LINE}\n", style=MASTER)
+        self.console.print(f"{self.LINE}\n\n\n{self.NAME.center(self.WIDTH)}\n\n\n{self.LINE}\n", style=MASTER)
         self.console.print(f"项目地址: {REPOSITORY}", style=MASTER)
         self.console.print(f"项目文档: {DOCUMENTATION_URL}", style=MASTER)
         self.console.print(f"开源许可: {LICENCE}\n", style=MASTER)

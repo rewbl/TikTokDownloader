@@ -167,15 +167,7 @@ class TikTok:
     def __summarize_results(self, count: SimpleNamespace, name="账号"):
         time_ = time() - count.time
         self.logger.info(
-            f"程序共处理 {
-            count.success +
-            count.failed} 个{name}，成功 {
-            count.success} 个，失败 {
-            count.failed} 个，耗时 {
-            int(time_ //
-                60)} 分钟 {
-            int(time_ %
-                60)} 秒")
+            f"程序共处理 {            count.success +            count.failed} 个{name}，成功 {            count.success} 个，失败 {            count.failed} 个，耗时 {            int(time_ //                60)} 分钟 {            int(time_ %                60)} 秒")
 
     def _deal_account_works_tiktok(
             self,
@@ -354,7 +346,7 @@ class TikTok:
         self.__display_extracted_information(
             mix, id_, name, mid, title, mark, )
         addition = addition or ("合集作品" if mix else "发布作品" if post else "喜欢作品")
-        old_mark = f"{m["mark"]}_{addition}" if (
+        old_mark = f"{m['mark']}_{addition}" if (
             m := self.cache.data.get(
                 mid if mix else id_)) else None
         with logger(root, name=f"{'MID' if mix else 'UID'}{mid if mix else id_}_{mark}_{addition}", old=old_mark,
@@ -588,8 +580,7 @@ class TikTok:
             mix_id, id_ = self._check_mix_id(data.url)
             if not id_:
                 self.logger.warning(
-                    f"配置文件 mix_urls 参数" f"第 {index} 条数据的 url {
-                    data.url} 错误，获取作品 ID 或合集 ID 失败")
+                    f"配置文件 mix_urls 参数" f"第 {index} 条数据的 url {                    data.url} 错误，获取作品 ID 或合集 ID 失败")
                 count.failed += 1
                 continue
             if not self._deal_mix_works(
@@ -839,11 +830,7 @@ class TikTok:
         self._deal_collection_data(root, params, logger, sec_user_id)
         time_ = time() - start
         self.logger.info(
-            f"程序运行耗时 {
-            int(time_ //
-                60)} 分钟 {
-            int(time_ %
-                60)} 秒")
+            f"程序运行耗时 {            int(time_ //                60)} 分钟 {            int(time_ %                60)} 秒")
         self.logger.info("已退出批量下载收藏作品模式")
 
     def _deal_collection_data(
