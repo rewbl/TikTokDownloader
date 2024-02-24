@@ -1,7 +1,7 @@
 from flask import render_template
 from flask import request
 
-from .main_web_UI import WebUI
+from src.Deprecated.application.main_web_UI import WebUI
 
 __all__ = ["Server"]
 

@@ -1,8 +1,8 @@
 from flask import redirect
 from flask import request
 
-from src.DataAcquirer import Comment
-from src.DataAcquirer import Live
+from ...DouyinEndpoints.CommentEndpoint import CommentEndpoint
+from ...DouyinEndpoints.LiveEndpoint import LiveEndpoint
 from .main_web_UI import WebUI
 
 __all__ = ['APIServer']
@@ -86,7 +86,7 @@ class APIServer(WebUI):
                 self.logger.warning(m := f"{u} 提取直播 ID 失败")
                 return {"data": None, "message": m}
             live_data = [
-                Live(
+                LiveEndpoint(
                     self.parameter,
                     **i,
                     cookie=request.json.get("cookie"),
@@ -118,7 +118,7 @@ class APIServer(WebUI):
             root, params, logger = self._generate_record_params(
                 data, merge=False, type_="comment")
             with logger(root, name=name, console=self.console, **params) as record:
-                if result := Comment(
+                if result := CommentEndpoint(
                         self.parameter,
                         id_,
                         pages=request.json.get("pages"),

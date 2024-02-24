@@ -2,8 +2,8 @@ from flask import render_template
 from flask import request
 from flask import url_for
 
-from src.DataAcquirer import Live
-from .main_complete import TikTok
+from src.DouyinEndpoints.LiveEndpoint import LiveEndpoint
+from src.application.main_complete import TikTok
 
 __all__ = ["WebUI"]
 
@@ -83,7 +83,7 @@ class WebUI(TikTok):
         params = self._generate_live_params(*self.links.live(url))
         if not params:
             return {}
-        live_data = [Live(self.parameter, **params[0]).run(), ]
+        live_data = [LiveEndpoint(self.parameter, **params[0]).run(), ]
         live_data = self.extractor.run(live_data, None, "live")[0]
         if not all(live_data):
             return {}

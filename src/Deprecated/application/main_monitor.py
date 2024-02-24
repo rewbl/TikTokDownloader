@@ -1,4 +1,4 @@
-from .main_complete import TikTok
+from src.application.main_complete import TikTok
 
 __all__ = ["Monitor"]
 
