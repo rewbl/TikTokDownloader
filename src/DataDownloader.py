@@ -19,15 +19,15 @@ from rich.progress import (
 )
 
 from src.config import Parameter
-from src.custom import DESCRIPTION_LENGTH
-from src.custom import MAX_WORKERS
-from src.custom import (
+from src.Infrastructure.custom import DESCRIPTION_LENGTH
+from src.Infrastructure.custom import MAX_WORKERS
+from src.Infrastructure.custom import (
     PROGRESS,
     INFO,
     WARNING,
 )
-from src.extend import VideoDownloader
-from src.tools import retry
+from src.Infrastructure.extend import VideoDownloader
+from src.Infrastructure.tools import retry
 
 __all__ = ["Downloader"]
 

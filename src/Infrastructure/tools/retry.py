@@ -1,4 +1,4 @@
-from src.custom import RETRY
+from src.Infrastructure.custom import RETRY
 
 __all__ = ["retry", "retry_lite", "retry_infinite", ]
 

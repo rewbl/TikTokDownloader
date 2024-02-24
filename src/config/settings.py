@@ -5,8 +5,8 @@ from pathlib import Path
 from platform import system
 from types import SimpleNamespace
 
-from src.custom import INFO, ERROR
-from src.module import ColorfulConsole
+from src.Infrastructure.custom import INFO, ERROR
+from src.Infrastructure.module import ColorfulConsole
 
 __all__ = ["Settings"]
 

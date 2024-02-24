@@ -15,15 +15,15 @@ from requests import get
 
 from src.config import Parameter
 from src.config import Settings
-from src.custom import BACKUP_RECORD_INTERVAL
-from src.custom import COOKIE_UPDATE_INTERVAL
-from src.custom import (
+from src.Infrastructure.custom import BACKUP_RECORD_INTERVAL
+from src.Infrastructure.custom import COOKIE_UPDATE_INTERVAL
+from src.Infrastructure.custom import (
     MASTER,
     WARNING,
     INFO,
     ERROR
 )
-from src.custom import (
+from src.Infrastructure.custom import (
     PROJECT_ROOT,
     VERSION_MAJOR,
     VERSION_MINOR,
@@ -34,19 +34,19 @@ from src.custom import (
     DOCUMENTATION_URL,
     DISCLAIMER_TEXT,
 )
-from src.custom import SERVER_HOST
-from src.custom import SERVER_PORT
-from src.custom import TEXT_REPLACEMENT
-from src.custom import verify_token
-from src.encrypt import XBogus
-from src.manager import DownloadRecorder
-from src.module import ColorfulConsole
-from src.module import Cookie
-from src.module import Register
-from src.record import BaseLogger
-from src.record import LoggerManager
-from src.tools import FileSwitch
-from src.tools import choose
+from src.Infrastructure.custom import SERVER_HOST
+from src.Infrastructure.custom import SERVER_PORT
+from src.Infrastructure.custom import TEXT_REPLACEMENT
+from src.Infrastructure.custom import verify_token
+from src.Infrastructure.encrypt import XBogus
+from src.Infrastructure.manager import DownloadRecorder
+from src.Infrastructure.module import ColorfulConsole
+from src.Infrastructure.module import Cookie
+from src.Infrastructure.module import Register
+from src.Infrastructure.record import BaseLogger
+from src.Infrastructure.record import LoggerManager
+from src.Infrastructure.tools import FileSwitch
+from src.Infrastructure.tools import choose
 from .main_api_server import APIServer
 from .main_complete import TikTok
 from .main_server import Server

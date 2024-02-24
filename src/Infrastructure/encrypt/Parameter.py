@@ -11,8 +11,8 @@ from requests import exceptions
 from requests import post
 from rich import print
 
-from src.custom import ERROR
-from src.custom import X_BOGUS_CODE
+from src.Infrastructure.custom import ERROR
+from src.Infrastructure.custom import X_BOGUS_CODE
 
 __all__ = ['XBogus', 'MsToken', 'TtWid', 'VerifyFp']
 HEADERS = {

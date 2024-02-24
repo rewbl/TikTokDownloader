@@ -1,4 +1,4 @@
-from src.module import ColorfulConsole
+from src.Infrastructure.module import ColorfulConsole
 
 __all__ = ["choose"]
 

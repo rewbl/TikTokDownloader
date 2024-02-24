@@ -3,7 +3,7 @@ from pathlib import Path
 from openpyxl import Workbook
 from openpyxl import load_workbook
 
-from src.module import ColorfulConsole
+from src.Infrastructure.module import ColorfulConsole
 from .text import BaseTextLogger
 
 

@@ -2,9 +2,9 @@ from pathlib import Path
 from time import localtime
 from time import strftime
 
-from src.custom import WARNING, ERROR, INFO
-from src.module import Cleaner
-from src.module import ColorfulConsole
+from src.Infrastructure.custom import WARNING, ERROR, INFO
+from src.Infrastructure.module import Cleaner
+from src.Infrastructure.module import ColorfulConsole
 
 
 class BaseLogger:

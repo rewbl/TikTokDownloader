@@ -7,21 +7,21 @@ from typing import TYPE_CHECKING
 from requests import exceptions
 from requests import get
 
-from src.custom import BLANK_PREVIEW
-from src.custom import USERAGENT
-from src.encrypt import MsToken
-from src.encrypt import TtWid
+from src.Infrastructure.custom import BLANK_PREVIEW
+from src.Infrastructure.custom import USERAGENT
+from src.Infrastructure.encrypt import MsToken
+from src.Infrastructure.encrypt import TtWid
 from src.extract import Extractor
-from src.module import Cleaner
-from src.module import ColorfulConsole
-from src.module import Cookie
-from src.module import FFMPEG
-from src.module import Register
-from src.storage import RecordManager
+from src.Infrastructure.module import Cleaner
+from src.Infrastructure.module import ColorfulConsole
+from src.Infrastructure.module import Cookie
+from src.Infrastructure.module import FFMPEG
+from src.Infrastructure.module import Register
+from src.Infrastructure.storage import RecordManager
 from .settings import Settings
 
 if TYPE_CHECKING:
-    from src.manager import DownloadRecorder
+    from src.Infrastructure.manager import DownloadRecorder
 
 __all__ = ["Parameter"]
 

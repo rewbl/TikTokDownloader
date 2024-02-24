@@ -1,6 +1,6 @@
 from rich.console import Console
 
-from src.custom import (
+from src.Infrastructure.custom import (
     PROMPT,
     GENERAL
 )

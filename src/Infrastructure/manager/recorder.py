@@ -1,12 +1,12 @@
 from pathlib import Path
 from platform import system
 
-from src.custom import (
+from src.Infrastructure.custom import (
     ERROR,
     WARNING,
     INFO,
 )
-from src.module import ColorfulConsole
+from src.Infrastructure.module import ColorfulConsole
 
 __all__ = ["DownloadRecorder"]
 

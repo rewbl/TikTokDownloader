@@ -3,7 +3,7 @@ from os.path import getsize
 from pathlib import Path
 from platform import system
 
-from src.module import ColorfulConsole
+from src.Infrastructure.module import ColorfulConsole
 from .text import BaseTextLogger
 
 

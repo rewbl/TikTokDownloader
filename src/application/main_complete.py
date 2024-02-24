@@ -18,16 +18,16 @@ from src.DataAcquirer import (
     Collection,
 )
 from src.DataDownloader import Downloader
-from src.custom import (
+from src.Infrastructure.custom import (
     WARNING,
 )
-from src.custom import failure_handling
-from src.custom import suspend
+from src.Infrastructure.custom import failure_handling
+from src.Infrastructure.custom import suspend
 from src.extract import Extractor
-from src.manager import Cache
-from src.storage import RecordManager
-from src.tools import TikTokAccount
-from src.tools import choose
+from src.Infrastructure.manager import Cache
+from src.Infrastructure.storage import RecordManager
+from src.Infrastructure.tools import TikTokAccount
+from src.Infrastructure.tools import choose
 
 __all__ = [
     "TikTok",

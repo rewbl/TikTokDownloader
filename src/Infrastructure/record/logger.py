@@ -7,8 +7,8 @@ from platform import system
 from time import localtime
 from time import strftime
 
-from src.custom import WARNING, ERROR, INFO
-from src.module import ColorfulConsole
+from src.Infrastructure.custom import WARNING, ERROR, INFO
+from src.Infrastructure.module import ColorfulConsole
 from .base import BaseLogger
 
 

@@ -7,7 +7,7 @@ from types import SimpleNamespace
 from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
-from src.custom import condition_filter
+from src.Infrastructure.custom import condition_filter
 
 if TYPE_CHECKING:
     from src.config import Parameter

@@ -15,14 +15,14 @@ from rich.progress import (
     TimeElapsedColumn,
 )
 
-from src.custom import ERROR
-from src.custom import PROGRESS
-from src.custom import USERAGENT
-from src.custom import WARNING
-from src.encrypt import MsToken
-from src.encrypt import TtWid
-from src.encrypt import VerifyFp
-from src.module.cookie import Cookie
+from src.Infrastructure.custom import ERROR
+from src.Infrastructure.custom import PROGRESS
+from src.Infrastructure.custom import USERAGENT
+from src.Infrastructure.custom import WARNING
+from src.Infrastructure.encrypt import MsToken
+from src.Infrastructure.encrypt import TtWid
+from src.Infrastructure.encrypt import VerifyFp
+from src.Infrastructure.module.cookie import Cookie
 
 __all__ = ["Register"]
 
