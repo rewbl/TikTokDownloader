@@ -47,10 +47,10 @@ from src.Infrastructure.record import BaseLogger
 from src.Infrastructure.record import LoggerManager
 from src.Infrastructure.tools import FileSwitch
 from src.Infrastructure.tools import choose
-from .main_api_server import APIServer
+from src.Deprecated.application.main_api_server import APIServer
 from .main_complete import TikTok
-from .main_server import Server
-from .main_web_UI import WebUI
+from src.Deprecated.application.main_server import Server
+from src.Deprecated.application.main_web_UI import WebUI
 
 __all__ = ["TikTokDownloader"]
 

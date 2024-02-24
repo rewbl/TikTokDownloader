@@ -16,7 +16,7 @@ __all__ = [
     "BLANK_PREVIEW",
 ]
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 VERSION_MAJOR = 5
 VERSION_MINOR = 3
 VERSION_BETA = True

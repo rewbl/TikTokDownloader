@@ -5,18 +5,16 @@ from random import choice
 from time import time
 from types import SimpleNamespace
 
-from src.DataAcquirer import (
-    Link,
-    Account,
-    Works,
-    Live,
-    Comment,
-    Mix,
-    User,
-    Search,
-    Hot,
-    Collection,
-)
+from src.DouyinEndpoints.CollectionEndpoint import CollectionEndpoint
+from src.DouyinEndpoints.HotEndpoint import HotEndpoint
+from src.DouyinEndpoints.SearchEndpoint import SearchEndpoint
+from src.DouyinEndpoints.UserEndpoint import UserEndpoint
+from src.DouyinEndpoints.LiveEndpoint import LiveEndpoint
+from src.DouyinEndpoints.MixEndpoint import MixEndpoint
+from src.DouyinEndpoints.CommentEndpoint import CommentEndpoint
+from src.DouyinEndpoints.WorksEndpoint import WorksEndpoint
+from src.DouyinEndpoints.AccountEndpoint import AccountEndpoint
+from src.DouyinEndpoints.LinkEndpoint import LinkEndpoint
 from src.DataDownloader import Downloader
 from src.Infrastructure.custom import (
     WARNING,
@@ -98,7 +96,7 @@ class TikTok:
         self.parameter = parameter
         self.console = parameter.console
         self.logger = parameter.logger
-        self.links = Link(parameter)
+        self.links = LinkEndpoint(parameter)
         self.downloader = Downloader(parameter)
         self.extractor = Extractor(parameter)
         self.storage = bool(parameter.storage_format)
@@ -180,7 +178,7 @@ class TikTok:
             logger,
     ):
         self.logger.info(f"开始处理第 {num} 个账号")
-        account_data = [Works(self.parameter, i, True).run() for i in item]
+        account_data = [WorksEndpoint(self.parameter, i, True).run() for i in item]
         if not any(account_data):
             self.logger.warning("获取 TikTok 作品数据失败")
             return False
@@ -298,7 +296,7 @@ class TikTok:
             **kwargs,
     ):
         self.logger.info(f"开始处理第 {num} 个账号" if num else "开始处理账号")
-        acquirer = Account(
+        acquirer = AccountEndpoint(
             self.parameter,
             sec_user_id,
             tab,
@@ -427,7 +425,7 @@ class TikTok:
             source=False,
             cookie: str = None):
         works_data = [
-            Works(
+            WorksEndpoint(
                 self.parameter,
                 i,
                 tiktok,
@@ -472,7 +470,7 @@ class TikTok:
             if not params:
                 self.logger.warning(f"{url} 提取直播 ID 失败")
                 continue
-            live_data = [Live(self.parameter, **i).run() for i in params]
+            live_data = [LiveEndpoint(self.parameter, **i).run() for i in params]
             if not [i for i in live_data if i]:
                 self.logger.warning("获取直播数据失败")
                 continue
@@ -533,7 +531,7 @@ class TikTok:
             for i in ids:
                 name = f"作品{i}_评论数据"
                 with logger(root, name=name, console=self.console, **params) as record:
-                    if Comment(self.parameter, i).run(self.extractor, record):
+                    if CommentEndpoint(self.parameter, i).run(self.extractor, record):
                         self.logger.info(f"作品评论数据已储存至 {name}")
                     else:
                         self.logger.warning("采集评论数据失败")
@@ -614,7 +612,7 @@ class TikTok:
         self.logger.info(f"开始处理第 {num} 个合集" if num else "开始处理合集")
         mix_params = self._generate_mix_params(mix_id, id_)
         if any(
-                mix_data := Mix(
+                mix_data := MixEndpoint(
                     self.parameter,
                     **mix_params,
                     cookie=cookie).run()):
@@ -656,7 +654,7 @@ class TikTok:
 
     def _get_user_data(self, sec_user_id: str, cookie: str = None):
         self.logger.info(f"正在获取账号 {sec_user_id} 的数据")
-        data = User(self.parameter, sec_user_id, cookie=cookie).run()
+        data = UserEndpoint(self.parameter, sec_user_id, cookie=cookie).run()
         return data or {}
 
     def _deal_user_data(
@@ -772,7 +770,7 @@ class TikTok:
             publish: tuple,
             source=False,
             cookie: str = None, ):
-        search_data = Search(
+        search_data = SearchEndpoint(
             self.parameter,
             keyword,
             type_[0],
@@ -805,18 +803,18 @@ class TikTok:
         self.logger.info("已退出采集抖音热榜数据模式")
 
     def _deal_hot_data(self, source=False):
-        time_, board = Hot(self.parameter).run()
+        time_, board = HotEndpoint(self.parameter).run()
         if not any(board):
             return None, None
         if source:
-            return time_, [{Hot.board_params[i].name: j} for i, j in board]
+            return time_, [{HotEndpoint.board_params[i].name: j} for i, j in board]
         root, params, logger = self.record.run(self.parameter, type_="hot")
         data = []
         for i, j in board:
-            name = f"实时热榜数据_{time_}_{Hot.board_params[i].name}"
+            name = f"实时热榜数据_{time_}_{HotEndpoint.board_params[i].name}"
             with logger(root, name=name, console=self.console, **params) as record:
                 data.append(
-                    {Hot.board_params[i].name: self.extractor.run(j, record, type_="hot")})
+                    {HotEndpoint.board_params[i].name: self.extractor.run(j, record, type_="hot")})
         self.logger.info(f"热榜数据已储存至: 实时热榜数据_{time_} + 榜单类型")
         # print(time_, data, source)  # 调试代码
         return time_, data
@@ -842,7 +840,7 @@ class TikTok:
             api=False,
             source=False):
         self.logger.info("开始获取收藏数据")
-        collection = Collection(self.parameter, sec_user_id).run()
+        collection = CollectionEndpoint(self.parameter, sec_user_id).run()
         if not any(collection):
             self.logger.warning("获取账号收藏数据失败")
             return None
