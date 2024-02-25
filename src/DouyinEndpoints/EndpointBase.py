@@ -62,7 +62,9 @@ class EndpointBase:
                 params=params,
                 proxies=self.proxies,
                 timeout=self.timeout,
-                headers=headers or self.PC_headers, **kwargs)
+                headers=headers or self.PC_headers,
+                verify=False,
+                **kwargs)
             wait()
         except (
                 exceptions.ProxyError,
