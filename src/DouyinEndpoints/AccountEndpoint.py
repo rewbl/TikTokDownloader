@@ -3,7 +3,7 @@ from datetime import date, datetime
 from src.DouyinEndpoints.InfoEndpoint import InfoEndpoint
 from src.DouyinEndpoints.EndpointBase import EndpointBase
 from src.Infrastructure.tools import retry, timestamp
-from src.config import Parameter
+from src.config import RuntimeParameters
 from src.extract import Extractor
 
 
@@ -13,7 +13,7 @@ class AccountEndpoint(EndpointBase):
 
     def __init__(
             self,
-            params: Parameter,
+            params: RuntimeParameters,
             sec_user_id: str,
             tab="post",
             earliest="",

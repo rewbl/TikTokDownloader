@@ -7,8 +7,8 @@ from urllib3.exceptions import InsecureRequestWarning
 
 from src.Infrastructure.custom import wait, PROGRESS
 from src.Infrastructure.encrypt import XBogus
-from src.config import Parameter
-
+from src.config import RuntimeParameters
+from src.config.RuntimeParameters import RuntimeCoreParameters
 
 # Suppress only the single InsecureRequestWarning from urllib3 needed for unverified HTTPS requests.
 urllib3.disable_warnings(InsecureRequestWarning)
@@ -41,6 +41,9 @@ class EndpointConst:
 
     cookie: str = None
 
+    def __init__(self):
+        self.response= []
+
     @staticmethod
     def init_headers(headers: dict) -> tuple:
         return (headers | {
@@ -68,16 +71,16 @@ class EndpointConst:
 
 class EndpointBase(EndpointConst):
 
-    def __init__(self, params: Parameter, cookie: str = None):
+    def __init__(self, params: RuntimeCoreParameters, cookie: str = None):
+        super().__init__()
         self.PC_headers, self.black_headers = self.init_headers(params.headers)
         self.log = params.logger
         self.console = params.console
         self.proxies = params.proxies
-        self.max_retry = params.max_retry
-        self.timeout = params.timeout
+        self.max_retry = 5
+        self.timeout = 10
         self.cookie = params.cookie
         self.cursor = 0
-        self.response = []
         self.finished = False
 
         if cookie:
@@ -158,7 +161,7 @@ class EndpointBaseY:
     comment_tiktok_api = "https://www.tiktok.com/api/comment/list/"  # 评论API
     reply_tiktok_api = "https://www.tiktok.com/api/comment/list/reply/"  # 评论回复API
 
-    def __init__(self, params: Parameter, cookie: str = None):
+    def __init__(self, params: RuntimeParameters, cookie: str = None):
         self.PC_headers, self.black_headers = self.init_headers(params.headers)
         self.log = params.logger
         self.xb = params.xb

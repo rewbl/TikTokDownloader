@@ -1,13 +1,13 @@
 from src.DouyinEndpoints.EndpointBase import EndpointBase
 from src.Infrastructure.tools import retry
-from src.config import Parameter
+from src.config import RuntimeParameters
 
 
 class WorksEndpoint(EndpointBase):
     item_api = "https://www.douyin.com/aweme/v1/web/aweme/detail/"
     item_api_tiktok = "https://api16-normal-c-useast1a.tiktokv.com/aweme/v1/feed/"
 
-    def __init__(self, params: Parameter, item_id: str, tiktok: bool,
+    def __init__(self, params: RuntimeParameters, item_id: str, tiktok: bool,
                  cookie: str = None, ):
         super().__init__(params, cookie)
         self.id = item_id

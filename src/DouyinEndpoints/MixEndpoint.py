@@ -1,7 +1,7 @@
 from src.DouyinEndpoints.EndpointBase import EndpointBase
 from src.DouyinEndpoints.WorksEndpoint import WorksEndpoint
 from src.Infrastructure.tools import retry
-from src.config import Parameter
+from src.config import RuntimeParameters
 from src.extract import Extractor
 
 
@@ -10,7 +10,7 @@ class MixEndpoint(EndpointBase):
 
     def __init__(
             self,
-            params: Parameter,
+            params: RuntimeParameters,
             mix_id: str = None,
             works_id: str = None,
             cookie: str = None, ):

@@ -1,6 +1,6 @@
 from src.DouyinEndpoints.EndpointBase import EndpointBase
 from src.Infrastructure.tools import retry
-from src.config import Parameter
+from src.config import RuntimeParameters
 from src.extract import Extractor
 
 
@@ -8,7 +8,7 @@ class CommentEndpoint(EndpointBase):
     comment_api = "https://www.douyin.com/aweme/v1/web/comment/list/"  # 评论API
     comment_api_reply = "https://www.douyin.com/aweme/v1/web/comment/list/reply/"  # 评论回复API
 
-    def __init__(self, params: Parameter, item_id: str, pages: int = None,
+    def __init__(self, params: RuntimeParameters, item_id: str, pages: int = None,
                  cookie: str = None, ):
         super().__init__(params, cookie)
         self.item_id = item_id

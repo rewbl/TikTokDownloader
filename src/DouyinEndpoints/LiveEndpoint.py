@@ -1,6 +1,6 @@
 from src.DouyinEndpoints.EndpointBase import EndpointBase
 from src.Infrastructure.tools import retry
-from src.config import Parameter
+from src.config import RuntimeParameters
 
 
 class LiveEndpoint(EndpointBase):
@@ -9,7 +9,7 @@ class LiveEndpoint(EndpointBase):
 
     def __init__(
             self,
-            params: Parameter,
+            params: RuntimeParameters,
             web_rid=None,
             room_id=None,
             sec_user_id=None,

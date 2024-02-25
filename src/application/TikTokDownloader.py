@@ -12,18 +12,19 @@ from src.Infrastructure.custom import (
     VERSION_BETA,
 )
 from src.Infrastructure.custom import TEXT_REPLACEMENT
-from src.Infrastructure.encrypt import XBogus
 from src.Infrastructure.manager import DownloadRecorder
 from src.Infrastructure.module import ColorfulConsole
 from src.Infrastructure.module import Cookie
 from src.Infrastructure.record import LoggerManager
 from src.Infrastructure.tools import FileSwitch
 from src.Infrastructure.tools import choose
-from src.config import Parameter
+from src.config import RuntimeParameters
 from src.config import Settings
-from .main_complete import TikTokCLI
+from .TikTokCLI import TikTokCLI
 
 __all__ = ["TikTokDownloader"]
+
+from ..config.AppConfig import XBogusInstance
 
 
 def start_cookie_task(function):
@@ -43,10 +44,8 @@ class AppBase:
 
     def __init__(self):
         self.console = ColorfulConsole()
-        self.x_bogus = XBogus()
-
         self.blacklist = None
-        self.parameter = None
+        self.runtime_parameters = None
 
         self.event = Event()
         self.cookie = None
@@ -55,7 +54,7 @@ class AppBase:
 
     def periodic_update_cookie(self):
         while not self.event.is_set():
-            self.parameter.update_cookie()
+            self.runtime_parameters.update_cookie()
             self.event.wait(COOKIE_UPDATE_INTERVAL)
 
     def close(self):
@@ -63,22 +62,22 @@ class AppBase:
         self.blacklist.close()
 
     def check_settings(self):
-        self.parameter = Parameter(
+        self.runtime_parameters = RuntimeParameters(
             self.settings,
             self.cookie,
             main_path=PROJECT_ROOT,
             logger=LoggerManager,
-            xb=self.x_bogus,
+            xb=XBogusInstance,
             console=self.console,
             **self.settings.read(),
             blacklist=self.blacklist,
         )
-        self.parameter.cleaner.set_rule(TEXT_REPLACEMENT, True)
+        self.runtime_parameters.cleaner.set_rule(TEXT_REPLACEMENT, True)
 
     def write_cookie(self):
         self.cookie.run()
         self.check_settings()
-        self.parameter.update_cookie()
+        self.runtime_parameters.update_cookie()
 
     def check_config(self):
         folder = ("./src", "./src/config", "./cache", "./cache/temp")
@@ -137,7 +136,7 @@ class TikTokDownloader(AppBase):
     @start_cookie_task
     def complete(self):
         """终端交互模式"""
-        example = TikTokCLI(self.parameter)
+        example = TikTokCLI(self.runtime_parameters)
         register(self.blacklist.close)
         try:
             example.run()
@@ -155,5 +154,5 @@ class TikTokDownloader(AppBase):
     def run(self):
         self.check_config()
         self.check_settings()
-        self.main_menu(self.parameter.default_mode)
+        self.main_menu(self.runtime_parameters.default_mode)
         self.close()

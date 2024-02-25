@@ -3,7 +3,8 @@ from unittest import TestCase
 from src.DouyinEndpoints.InfoEndpoint import InfoEndpoint
 from src.DouyinEndpoints.EndpointBase import EndpointBase
 from src.Infrastructure.tools import retry, timestamp
-from src.config import Parameter
+from src.config import RuntimeParameters
+from src.config.RuntimeParameters import RuntimeCoreParameters
 from src.extract import Extractor
 
 
@@ -22,7 +23,7 @@ class CollectionEndpoint(EndpointBase):
         "downlink": "10",
     }
 
-    def __init__(self, params: Parameter, sec_user_id: str,
+    def __init__(self, params: RuntimeCoreParameters, sec_user_id: str,
                  pages: int = None, ):
         super().__init__(params)
         self.pages = pages or params.max_pages

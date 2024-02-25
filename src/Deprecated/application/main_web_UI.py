@@ -3,7 +3,7 @@ from flask import request
 from flask import url_for
 
 from src.DouyinEndpoints.LiveEndpoint import LiveEndpoint
-from src.application.main_complete import TikTokCLI
+from src.application.TikTokCLI import TikTokCLI
 
 __all__ = ["WebUI"]
 

@@ -1,12 +1,12 @@
 from src.DouyinEndpoints.EndpointBase import EndpointBase
 from src.Infrastructure.tools import retry
-from src.config import Parameter
+from src.config import RuntimeParameters
 
 
 class UserEndpoint(EndpointBase):
     user_api = "https://www.douyin.com/aweme/v1/web/user/profile/other/"  # 账号详细数据API
 
-    def __init__(self, params: Parameter, sec_user_id: str,
+    def __init__(self, params: RuntimeParameters, sec_user_id: str,
                  cookie: str = None, ):
         super().__init__(params, cookie)
         self.sec_user_id = sec_user_id

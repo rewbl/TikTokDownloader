@@ -3,7 +3,7 @@ from urllib.parse import quote
 
 from src.DouyinEndpoints.EndpointBase import EndpointBase
 from src.Infrastructure.tools import retry
-from src.config import Parameter
+from src.config import RuntimeParameters
 
 
 class SearchEndpoint(EndpointBase):
@@ -36,7 +36,7 @@ class SearchEndpoint(EndpointBase):
 
     def __init__(
             self,
-            params: Parameter,
+            params: RuntimeParameters,
             keyword: str,
             tab=0,
             page=1,

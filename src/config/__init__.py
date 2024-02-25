@@ -1,4 +1,4 @@
-from .parameter import Parameter
+from .RuntimeParameters import RuntimeParameters
 from .settings import Settings
 
-__all__ = ["Parameter", "Settings"]
+__all__ = ["RuntimeParameters", "Settings"]

@@ -10,7 +10,7 @@ from src.Infrastructure.custom import (
 from src.Infrastructure.tools import retry_infinite
 
 if TYPE_CHECKING:
-    from src.config import Parameter
+    from src.config import RuntimeParameters
 
 __all__ = ["Cache"]
 
@@ -20,7 +20,7 @@ class Cache:
 
     def __init__(
             self,
-            parameter: "Parameter",
+            parameter: "RuntimeParameters",
             mark: bool,
             name: bool):
         self.console = parameter.console

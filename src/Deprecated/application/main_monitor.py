@@ -1,4 +1,4 @@
-from src.application.main_complete import TikTokCLI
+from src.application.TikTokCLI import TikTokCLI
 
 __all__ = ["Monitor"]
 

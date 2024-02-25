@@ -10,13 +10,13 @@ from urllib.parse import urlparse
 from src.Infrastructure.custom import condition_filter
 
 if TYPE_CHECKING:
-    from src.config import Parameter
+    from src.config import RuntimeParameters
 
 __all__ = ["Extractor"]
 
 
 class Extractor:
-    def __init__(self, params: "Parameter"):
+    def __init__(self, params: "RuntimeParameters"):
         self.log = params.logger
         self.date_format = params.date_format
         self.cleaner = params.cleaner

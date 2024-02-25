@@ -23,10 +23,19 @@ from ..Infrastructure.module.cookie import generate_cookie
 if TYPE_CHECKING:
     from src.Infrastructure.manager import DownloadRecorder
 
-__all__ = ["Parameter"]
+__all__ = ["RuntimeParameters"]
 
 
-class Parameter:
+class RuntimeCoreParameters:
+    logger = None
+    console = None
+    proxies = None
+    cookie = None
+    headers = None
+    max_pages = 100
+
+
+class RuntimeParameters:
     name_keys = (
         "id",
         "desc",
@@ -255,7 +264,7 @@ class Parameter:
             self.logger.info(f"chunk 参数已设置为 {chunk}", False)
             return chunk
         self.logger.warning(
-            f"chunk 参数 {chunk} 设置错误，程序将使用默认值：{ 1024 * 1024}", False)
+            f"chunk 参数 {chunk} 设置错误，程序将使用默认值：{1024 * 1024}", False)
         return 1024 * 1024
 
     def __check_max_retry(self, max_retry: int) -> int:
@@ -353,3 +362,14 @@ class Parameter:
         self.settings.update(data := self.get_settings_data())
         # print(data)  # 调试使用
         return data
+
+
+def get_core_parameters(params: RuntimeParameters):
+    cp = RuntimeCoreParameters()
+    cp.logger = params.logger
+    cp.console = params.console
+    cp.proxies = params.proxies
+    cp.cookie = params.cookie
+    cp.headers = params.headers
+    cp.max_pages = params.max_pages
+    return cp

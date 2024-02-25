@@ -2,7 +2,7 @@ from re import compile
 from urllib.parse import urlparse, parse_qs
 
 from src.DouyinEndpoints.ShareEndpoint import ShareEndpoint
-from src.config import Parameter
+from src.config import RuntimeParameters
 
 
 class LinkEndpoint:
@@ -39,7 +39,7 @@ class LinkEndpoint:
     works_link_tiktok = compile(
         r"\S*?https://www\.tiktok\.com/@\S+?/video/(\d{19})\S*?")  # 作品链接
 
-    def __init__(self, params: Parameter):
+    def __init__(self, params: RuntimeParameters):
         self.share = ShareEndpoint(params.logger, params.proxies, params.max_retry)
 
     def user(self, text: str) -> list:

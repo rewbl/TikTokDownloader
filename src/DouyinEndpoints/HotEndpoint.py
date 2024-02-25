@@ -3,7 +3,7 @@ from types import SimpleNamespace
 
 from src.DouyinEndpoints.EndpointBase import EndpointBase
 from src.Infrastructure.tools import retry
-from src.config import Parameter
+from src.config import RuntimeParameters
 
 
 class HotEndpoint(EndpointBase):
@@ -31,7 +31,7 @@ class HotEndpoint(EndpointBase):
         ),
     )
 
-    def __init__(self, params: Parameter):
+    def __init__(self, params: RuntimeParameters):
         super().__init__(params)
         del self.PC_headers["Cookie"]
         self.time = None

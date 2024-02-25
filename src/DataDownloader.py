@@ -18,7 +18,7 @@ from rich.progress import (
     TransferSpeedColumn,
 )
 
-from src.config import Parameter
+from src.config import RuntimeParameters
 from src.Infrastructure.custom import DESCRIPTION_LENGTH
 from src.Infrastructure.custom import MAX_WORKERS
 from src.Infrastructure.custom import (
@@ -37,7 +37,7 @@ class Downloader:
         'User-Agent': 'com.ss.android.ugc.trill/494+Mozilla/5.0+(Linux;+Android+12;+2112123G+Build/SKQ1.211006.001;+wv)'
                       '+AppleWebKit/537.36+(KHTML,+like+Gecko)+Version/4.0+Chrome/107.0.5304.105+Mobile+Safari/537.36'}
 
-    def __init__(self, params: Parameter):
+    def __init__(self, params: RuntimeParameters):
         self.cleaner = params.cleaner
         self.cookie = params.cookie
         self.PC_headers, self.black_headers = self.init_headers(params.headers)

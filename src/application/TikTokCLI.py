@@ -21,6 +21,8 @@ from src.Infrastructure.custom import (
 )
 from src.Infrastructure.custom import failure_handling
 from src.Infrastructure.custom import suspend
+from src.config import RuntimeParameters
+from src.config.RuntimeParameters import get_core_parameters
 from src.extract import Extractor
 from src.Infrastructure.manager import Cache
 from src.Infrastructure.storage import RecordManager
@@ -92,7 +94,7 @@ class TikTokCLI:
         3: "search_live"
     }
 
-    def __init__(self, parameter):
+    def __init__(self, parameter: RuntimeParameters):
         self.parameter = parameter
         self.console = parameter.console
         self.logger = parameter.logger
@@ -840,7 +842,8 @@ class TikTokCLI:
             api=False,
             source=False):
         self.logger.info("开始获取收藏数据")
-        collection = CollectionEndpoint(self.parameter, sec_user_id).run()
+        core_params = get_core_parameters(self.parameter)
+        collection = CollectionEndpoint(core_params, sec_user_id).run()
         if not any(collection):
             self.logger.warning("获取账号收藏数据失败")
             return None
