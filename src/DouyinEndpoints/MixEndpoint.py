@@ -59,7 +59,7 @@ class MixEndpoint(EndpointBase):
         try:
             if not (w := data["aweme_list"]):
                 raise KeyError
-            self.deal_item_data(w)
+            self.move_list_to_response(w)
             self.cursor = data['cursor']
             self.finished = not data["has_more"]
             return True

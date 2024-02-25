@@ -1,3 +1,5 @@
+from time import sleep
+
 from src.Infrastructure.module import ColorfulConsole
 
 __all__ = ["choose"]
@@ -9,7 +11,9 @@ def choose(
         console: ColorfulConsole,
         separate=None,
         test_return=None) -> str:
+
     if test_return:
+        sleep(1)
         return test_return
     screen = f"{title}:\n"
     row = 0

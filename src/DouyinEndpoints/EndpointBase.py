@@ -1,12 +1,17 @@
 from urllib.parse import urlencode
 
+import urllib3
 from requests import request, exceptions
 from rich.progress import Progress, TextColumn, BarColumn, TimeElapsedColumn
+from urllib3.exceptions import InsecureRequestWarning
 
 from src.Infrastructure.custom import wait, PROGRESS
 from src.Infrastructure.encrypt import XBogus
 from src.config import Parameter
 
+
+# Suppress only the single InsecureRequestWarning from urllib3 needed for unverified HTTPS requests.
+urllib3.disable_warnings(InsecureRequestWarning)
 
 class Encrypter:
     @staticmethod
@@ -49,13 +54,23 @@ class EndpointConst:
     def deal_url_params(self, params: dict, number=8):
         Encrypter.encrypt_request(params, self._get_ms_token(), number)
 
+    def move_list_to_response(
+            self,
+            data: list[dict],
+            start: int = None,
+            end: int = None):
+        if not data:
+            return
+
+        for i in data[start:end]:
+            self.response.append(i)
+
 
 class EndpointBase(EndpointConst):
 
     def __init__(self, params: Parameter, cookie: str = None):
         self.PC_headers, self.black_headers = self.init_headers(params.headers)
         self.log = params.logger
-        self.xb = params.xb
         self.console = params.console
         self.proxies = params.proxies
         self.max_retry = params.max_retry
@@ -105,17 +120,6 @@ class EndpointBase(EndpointConst):
             else:
                 self.log.warning("响应内容为空，可能是接口失效或者 Cookie 失效，请尝试更新 Cookie")
             return False
-
-    def deal_item_data(
-            self,
-            data: list[dict],
-            start: int = None,
-            end: int = None):
-        if not data:
-            return
-
-        for i in data[start:end]:
-            self.response.append(i)
 
     def progress_object(self):
         return Progress(

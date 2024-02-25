@@ -102,7 +102,7 @@ class CommentEndpoint(EndpointBase):
             return False
         try:
             if c := data["comments"]:
-                self.deal_item_data(c)
+                self.move_list_to_response(c)
             self.cursor = data["cursor"]
             self.finished = not data["has_more"]
             return True

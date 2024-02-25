@@ -130,7 +130,7 @@ class AccountEndpoint(EndpointBase):
                 self.finished = True
             else:
                 self.cursor = data['max_cursor']
-                self.deal_item_data(data_list)
+                self.move_list_to_response(data_list)
                 self.finished = not data["has_more"]
             return True
         except KeyError:

@@ -56,7 +56,7 @@ class XBogus:
     __code = X_BOGUS_CODE
 
     @staticmethod
-    def disturb_array(
+    def _disturb_array(
             a, b, e, d, c, f, t, n, o, i, r, _, x, u, s, l, v, h, g
     ):
         array = [0] * 19
@@ -82,7 +82,7 @@ class XBogus:
         return array
 
     @staticmethod
-    def generate_garbled_1(
+    def _generate_garbled_1(
             a,
             b,
             e,
@@ -125,18 +125,18 @@ class XBogus:
         return "".join(map(chr, map(int, array)))
 
     @staticmethod
-    def generate_num(text):
+    def _generate_num(text):
         return [
             ord(text[i]) << 16 | ord(text[i + 1]) << 8 | ord(text[i + 2]) << 0
             for i in range(0, 21, 3)
         ]
 
     @staticmethod
-    def generate_garbled_2(a, b, c):
+    def _generate_garbled_2(a, b, c):
         return chr(a) + chr(b) + c
 
     @staticmethod
-    def generate_garbled_3(a, b):
+    def _generate_garbled_3(a, b):
         d = list(range(256))
         c = 0
         f = ""
@@ -158,9 +158,9 @@ class XBogus:
             f += chr(ord(b[b_idx]) ^ d[(d[t] + d[c]) % 256])
         return f
 
-    def calculate_md5(self, input_string):
+    def _calculate_md5(self, input_string):
         if isinstance(input_string, str):
-            array = self.md5_to_array(input_string)
+            array = self._md5_to_array(input_string)
         elif isinstance(input_string, list):
             array = input_string
         else:
@@ -170,7 +170,7 @@ class XBogus:
         md5_hash.update(bytes(array))
         return md5_hash.hexdigest()
 
-    def md5_to_array(self, md5_str):
+    def _md5_to_array(self, md5_str):
         if isinstance(md5_str, str) and len(md5_str) > 32:
             return [ord(char) for char in md5_str]
         else:
@@ -180,18 +180,18 @@ class XBogus:
                 for index in range(0, len(md5_str), 2)
             ]
 
-    def process_url_path(self, url_path):
-        return self.md5_to_array(
-            self.calculate_md5(self.md5_to_array(self.calculate_md5(url_path)))
+    def _process_url_path(self, url_path):
+        return self._md5_to_array(
+            self._calculate_md5(self._md5_to_array(self._calculate_md5(url_path)))
         )
 
-    def generate_str(self, num):
+    def _generate_str(self, num):
         string = [num & 16515072, num & 258048, num & 4032, num & 63]
         string = [i >> j for i, j in zip(string, range(18, -1, -6))]
         return "".join([self.__string[i] for i in string])
 
     # @run_time
-    def generate_x_bogus(
+    def _generate_x_bogus(
             self,
             query: list,
             params: int,
@@ -222,11 +222,11 @@ class XBogus:
                 i = int(i)
             zero ^= i
         array[-1] = zero
-        garbled = self.generate_garbled_1(*self.disturb_array(*array))
-        garbled = self.generate_garbled_2(
-            2, 255, self.generate_garbled_3("ÿ", garbled))
-        return "".join(self.generate_str(i)
-                       for i in self.generate_num(garbled))
+        garbled = self._generate_garbled_1(*self._disturb_array(*array))
+        garbled = self._generate_garbled_2(
+            2, 255, self._generate_garbled_3("ÿ", garbled))
+        return "".join(self._generate_str(i)
+                       for i in self._generate_num(garbled))
 
     def get_x_bogus(
             self,
@@ -234,8 +234,8 @@ class XBogus:
             params=8,
             test_time=None):
         timestamp = int(test_time or time())
-        query = self.process_url_path(urlencode(query))
-        return self.generate_x_bogus(query, params, timestamp)
+        query = self._process_url_path(urlencode(query))
+        return self._generate_x_bogus(query, params, timestamp)
 
 
 class MsToken:

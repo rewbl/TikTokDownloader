@@ -1,3 +1,5 @@
+from unittest import TestCase
+
 from src.DouyinEndpoints.InfoEndpoint import InfoEndpoint
 from src.DouyinEndpoints.EndpointBase import EndpointBase
 from src.Infrastructure.tools import retry, timestamp
@@ -56,7 +58,7 @@ class CollectionEndpoint(EndpointBase):
             return False
         try:
             self.cursor = data['cursor']
-            self.deal_item_data(data["aweme_list"])
+            self.move_list_to_response(data["aweme_list"])
             self.finished = not data["has_more"]
             return True
         except KeyError:
@@ -81,3 +83,11 @@ class CollectionEndpoint(EndpointBase):
                 }
             }
             self.response.append(temp_dict)
+
+
+class TestCollectionEndpoint(TestCase):
+    def setUp(self) -> None:
+        ...
+
+    def test_run(self):
+        pass

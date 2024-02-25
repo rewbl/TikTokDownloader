@@ -130,7 +130,7 @@ class SearchEndpoint(EndpointBase):
             self.log.warning("获取搜索数据失败")
             return False
         try:
-            self.deal_item_data(data[key])
+            self.move_list_to_response(data[key])
             self.cursor = data["cursor"]
             self.finished = not data["has_more"]
             return True
