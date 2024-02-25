@@ -16,9 +16,9 @@ from src.Infrastructure.module import Cleaner
 from src.Infrastructure.module import ColorfulConsole
 from src.Infrastructure.module import Cookie
 from src.Infrastructure.module import FFMPEG
-from src.Infrastructure.module import Register
 from src.Infrastructure.storage import RecordManager
 from .settings import Settings
+from ..Infrastructure.module.cookie import generate_cookie
 
 if TYPE_CHECKING:
     from src.Infrastructure.manager import DownloadRecorder
@@ -159,7 +159,7 @@ class Parameter:
         elif isinstance(cookie, str):
             for i in parameters:
                 if isinstance(i, dict):
-                    cookie += Register.generate_cookie(i)
+                    cookie += generate_cookie(i)
             return cookie
 
     def __check_root(self, root: str) -> Path:
@@ -303,7 +303,7 @@ class Parameter:
         # self.console.print("Update Cookie")
         if self.cookie:
             self.__add_cookie(self.cookie)
-            self.headers["Cookie"] = Register.generate_cookie(self.cookie)
+            self.headers["Cookie"] = generate_cookie(self.cookie)
         elif self.cookie_cache:
             self.headers["Cookie"] = self.__add_cookie(self.cookie_cache)
 

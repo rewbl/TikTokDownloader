@@ -102,3 +102,10 @@ class Cookie:
         data = self.settings.read()
         data["cookie"] = text
         self.settings.update(data)
+
+
+def generate_cookie(data: dict) -> str:
+    if not isinstance(data, dict):
+        return ""
+    result = [f"{k}={v}" for k, v in data.items()]
+    return "; ".join(result)

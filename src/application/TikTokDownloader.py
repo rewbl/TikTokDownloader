@@ -1,17 +1,10 @@
 from atexit import register
 from contextlib import suppress
 from pathlib import Path
-from shutil import rmtree
 from threading import Event
 from threading import Thread
 
-from src.config import Parameter
-from src.config import Settings
-from src.Infrastructure.custom import BACKUP_RECORD_INTERVAL
 from src.Infrastructure.custom import COOKIE_UPDATE_INTERVAL
-from src.Infrastructure.custom import (
-    WARNING
-)
 from src.Infrastructure.custom import (
     PROJECT_ROOT,
     VERSION_MAJOR,
@@ -23,11 +16,11 @@ from src.Infrastructure.encrypt import XBogus
 from src.Infrastructure.manager import DownloadRecorder
 from src.Infrastructure.module import ColorfulConsole
 from src.Infrastructure.module import Cookie
-from src.Infrastructure.module import Register
-from src.Infrastructure.record import BaseLogger
 from src.Infrastructure.record import LoggerManager
 from src.Infrastructure.tools import FileSwitch
 from src.Infrastructure.tools import choose
+from src.config import Parameter
+from src.config import Settings
 from .main_complete import TikTokCLI
 
 __all__ = ["TikTokDownloader"]
@@ -111,11 +104,6 @@ class TikTokDownloader(AppBase):
         super().__init__()
         self.settings = Settings(PROJECT_ROOT, self.console)
         self.cookie = Cookie(self.settings, self.console)
-        self.register = Register(
-            self.settings,
-            self.console,
-            self.x_bogus,
-        )
         self.running = True
         self.cookie_task = Thread(target=self.periodic_update_cookie)
         self.__function = None
