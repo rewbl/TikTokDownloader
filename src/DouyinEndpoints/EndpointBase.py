@@ -4,10 +4,136 @@ from requests import request, exceptions
 from rich.progress import Progress, TextColumn, BarColumn, TimeElapsedColumn
 
 from src.Infrastructure.custom import wait, PROGRESS
+from src.Infrastructure.encrypt import XBogus
 from src.config import Parameter
 
 
-class EndpointBase:
+class Encrypter:
+    @staticmethod
+    def encrypt_request(params: dict, ms_token: str, number: int = 8):
+        if ms_token:
+            params["msToken"] = ms_token
+        params["X-Bogus"] = XBogus().get_x_bogus(params, number)
+
+
+class EndpointConst:
+    reply_tiktok_api = "https://www.tiktok.com/api/comment/list/reply/"  # 评论回复API
+    comment_tiktok_api = "https://www.tiktok.com/api/comment/list/"  # 评论API
+    related_tiktok_api = "https://www.tiktok.com/api/related/item_list/"  # 猜你喜欢API
+    user_tiktok_api = "https://www.tiktok.com/api/user/detail/"  # 账号数据API
+    home_tiktok_api = "https://www.tiktok.com/api/post/item_list/"  # 发布页API
+    recommend_api = "https://www.tiktok.com/api/recommend/item_list/"  # 推荐页API
+    following_api = "https://www.douyin.com/aweme/v1/web/user/following/list/"  # 关注列表API
+    history_api = "https://www.douyin.com/aweme/v1/web/history/read/"  # 观看历史API
+    follow_api = "https://www.douyin.com/aweme/v1/web/follow/feed/"  # 关注账号作品推荐API
+    familiar_api = "https://www.douyin.com/aweme/v1/web/familiar/feed/"  # 朋友作品推荐API
+    spotlight_api = "https://www.douyin.com/aweme/v1/web/im/spotlight/relation/"  # 关注账号API
+    feed_api = "https://www.douyin.com/aweme/v1/web/tab/feed/"  # 推荐页API
+    mix_list_api = "https://www.douyin.com/aweme/v1/web/mix/listcollection/"  # 合集列表API
+    Phone_headers = {
+        'User-Agent': 'com.ss.android.ugc.trill/494+Mozilla/5.0+(Linux;+Android+12;+2112123G+Build/SKQ1.211006.001;+wv)'
+                      '+AppleWebKit/537.36+(KHTML,+like+Gecko)+Version/4.0+Chrome/107.0.5304.105+Mobile+Safari/537.36'}
+
+    cookie: str = None
+
+    @staticmethod
+    def init_headers(headers: dict) -> tuple:
+        return (headers | {
+            "Referer": "https://www.douyin.com/", },
+                {"User-Agent": headers["User-Agent"]})
+
+    def _get_ms_token(self):
+        if isinstance(self.cookie, dict) and "msToken" in self.cookie:
+            return self.cookie["msToken"]
+
+    def deal_url_params(self, params: dict, number=8):
+        Encrypter.encrypt_request(params, self._get_ms_token(), number)
+
+
+class EndpointBase(EndpointConst):
+
+    def __init__(self, params: Parameter, cookie: str = None):
+        self.PC_headers, self.black_headers = self.init_headers(params.headers)
+        self.log = params.logger
+        self.xb = params.xb
+        self.console = params.console
+        self.proxies = params.proxies
+        self.max_retry = params.max_retry
+        self.timeout = params.timeout
+        self.cookie = params.cookie
+        self.cursor = 0
+        self.response = []
+        self.finished = False
+
+        if cookie:
+            self.PC_headers["Cookie"] = cookie
+
+    def send_request(
+            self,
+            url: str,
+            params=None,
+            method='get',
+            headers=None,
+            **kwargs) -> dict | bool:
+        try:
+            response = request(
+                method,
+                url,
+                params=params,
+                proxies=self.proxies,
+                timeout=self.timeout,
+                headers=headers or self.PC_headers,
+                verify=False,
+                **kwargs)
+            wait()
+        except (
+                exceptions.ProxyError,
+                exceptions.SSLError,
+                exceptions.ChunkedEncodingError,
+                exceptions.ConnectionError,
+        ):
+            self.log.warning(f"网络异常，请求 {url}?{urlencode(params)} 失败")
+            return False
+        except exceptions.ReadTimeout:
+            self.log.warning(f"网络异常，请求 {url}?{urlencode(params)} 超时")
+            return False
+        try:
+            return response.json()
+        except exceptions.JSONDecodeError:
+            if response.text:
+                self.log.warning(f"响应内容不是有效的 JSON 格式：{response.text}")
+            else:
+                self.log.warning("响应内容为空，可能是接口失效或者 Cookie 失效，请尝试更新 Cookie")
+            return False
+
+    def deal_item_data(
+            self,
+            data: list[dict],
+            start: int = None,
+            end: int = None):
+        if not data:
+            return
+
+        for i in data[start:end]:
+            self.response.append(i)
+
+    def progress_object(self):
+        return Progress(
+            TextColumn(
+                "[progress.description]{task.description}",
+                style=PROGRESS,
+                justify="left"),
+            "•",
+            BarColumn(
+                bar_width=20),
+            "•",
+            TimeElapsedColumn(),
+            console=self.console,
+            transient=True,
+        )
+
+
+class EndpointBaseY:
     Phone_headers = {
         'User-Agent': 'com.ss.android.ugc.trill/494+Mozilla/5.0+(Linux;+Android+12;+2112123G+Build/SKQ1.211006.001;+wv)'
                       '+AppleWebKit/537.36+(KHTML,+like+Gecko)+Version/4.0+Chrome/107.0.5304.105+Mobile+Safari/537.36'}
@@ -62,7 +188,9 @@ class EndpointBase:
                 params=params,
                 proxies=self.proxies,
                 timeout=self.timeout,
-                headers=headers or self.PC_headers, **kwargs)
+                headers=headers or self.PC_headers,
+                verify=False,
+                **kwargs)
             wait()
         except (
                 exceptions.ProxyError,
