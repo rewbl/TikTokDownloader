@@ -28,7 +28,7 @@ from src.Infrastructure.tools import TikTokAccount
 from src.Infrastructure.tools import choose
 
 __all__ = [
-    "TikTok",
+    "TikTokCLI",
 ]
 
 
@@ -43,7 +43,7 @@ def check_storage_format(function):
     return inner
 
 
-class TikTok:
+class TikTokCLI:
     SEARCH = {
         "type": {
             "综合": 0,
@@ -165,7 +165,7 @@ class TikTok:
     def __summarize_results(self, count: SimpleNamespace, name="账号"):
         time_ = time() - count.time
         self.logger.info(
-            f"程序共处理 {            count.success +            count.failed} 个{name}，成功 {            count.success} 个，失败 {            count.failed} 个，耗时 {            int(time_ //                60)} 分钟 {            int(time_ %                60)} 秒")
+            f"程序共处理 {count.success + count.failed} 个{name}，成功 {count.success} 个，失败 {count.failed} 个，耗时 {int(time_ // 60)} 分钟 {int(time_ % 60)} 秒")
 
     def _deal_account_works_tiktok(
             self,
@@ -578,7 +578,7 @@ class TikTok:
             mix_id, id_ = self._check_mix_id(data.url)
             if not id_:
                 self.logger.warning(
-                    f"配置文件 mix_urls 参数" f"第 {index} 条数据的 url {                    data.url} 错误，获取作品 ID 或合集 ID 失败")
+                    f"配置文件 mix_urls 参数" f"第 {index} 条数据的 url {data.url} 错误，获取作品 ID 或合集 ID 失败")
                 count.failed += 1
                 continue
             if not self._deal_mix_works(
@@ -828,7 +828,7 @@ class TikTok:
         self._deal_collection_data(root, params, logger, sec_user_id)
         time_ = time() - start
         self.logger.info(
-            f"程序运行耗时 {            int(time_ //                60)} 分钟 {            int(time_ %                60)} 秒")
+            f"程序运行耗时 {int(time_ // 60)} 分钟 {int(time_ % 60)} 秒")
         self.logger.info("已退出批量下载收藏作品模式")
 
     def _deal_collection_data(
@@ -862,7 +862,8 @@ class TikTok:
                 select = choose(
                     "请选择采集功能",
                     [i for i, _ in self.__function],
-                    self.console)
+                    self.console,
+                    test_return='10')
                 if select in {"Q", "q"}:
                     self.running = False
                 elif not select:

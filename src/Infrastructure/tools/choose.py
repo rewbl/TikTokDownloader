@@ -7,7 +7,10 @@ def choose(
         title: str,
         options: tuple | list,
         console: ColorfulConsole,
-        separate=None) -> str:
+        separate=None,
+        test_return=None) -> str:
+    if test_return:
+        return test_return
     screen = f"{title}:\n"
     row = 0
     for i, j in enumerate(options, start=1):
@@ -16,3 +19,4 @@ def choose(
             screen += f"{'=' * 25}\n"
         row += 1
     return console.input(screen)
+

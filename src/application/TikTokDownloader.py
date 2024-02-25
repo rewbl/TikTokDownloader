@@ -48,7 +48,7 @@ from src.Infrastructure.record import LoggerManager
 from src.Infrastructure.tools import FileSwitch
 from src.Infrastructure.tools import choose
 from src.Deprecated.application.main_api_server import APIServer
-from .main_complete import TikTok
+from .main_complete import TikTokCLI
 from src.Deprecated.application.main_server import Server
 from src.Deprecated.application.main_web_UI import WebUI
 
@@ -222,14 +222,15 @@ class TikTokDownloader:
                     self.console,
                     separate=(
                         1,
-                        6))
+                        6),
+                    test_return='3')
             self.compatible(default_mode)
             default_mode = "0"
 
     @start_cookie_task
     def complete(self):
         """终端交互模式"""
-        example = TikTok(self.parameter)
+        example = TikTokCLI(self.parameter)
         register(self.blacklist.close)
         try:
             example.run()

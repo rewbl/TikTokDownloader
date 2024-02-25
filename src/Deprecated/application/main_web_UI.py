@@ -3,12 +3,12 @@ from flask import request
 from flask import url_for
 
 from src.DouyinEndpoints.LiveEndpoint import LiveEndpoint
-from src.application.main_complete import TikTok
+from src.application.main_complete import TikTokCLI
 
 __all__ = ["WebUI"]
 
 
-class WebUI(TikTok):
+class WebUI(TikTokCLI):
     def __init__(self, parameter):
         super().__init__(parameter)
         self.cookie = parameter.cookie
