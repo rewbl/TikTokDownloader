@@ -1,9 +1,9 @@
 from unittest import TestCase
 
-from src.DouyinEndpoints.InfoEndpoint import InfoEndpoint
+from src.DouyinEndpoints.UserInfoEndpoint import UserInfoEndpoint
 from src.DouyinEndpoints.EndpointBase import EndpointBase
 from src.Infrastructure.tools import retry, timestamp
-from src.config import RuntimeParameters
+from src.config.AppConfig import create_test_core_params, TestUserId
 from src.config.RuntimeParameters import RuntimeCoreParameters
 from src.extract import Extractor
 
@@ -28,7 +28,7 @@ class CollectionEndpoint(EndpointBase):
         super().__init__(params)
         self.pages = pages or params.max_pages
         self.sec_user_id = bool(sec_user_id)
-        self.info = InfoEndpoint(params, sec_user_id)
+        self.info = UserInfoEndpoint(params, sec_user_id)
 
     def run(self):
         with self.progress_object() as progress:
@@ -76,7 +76,8 @@ class CollectionEndpoint(EndpointBase):
             self.response.append({"author": info})
         else:
             temp_data = timestamp()
-            self.log.warning(f"owner_url 参数未设置 或者 获取账号数据失败，本次运行将临时使用 {            temp_data} 作为账号昵称和 UID")
+            self.log.warning(
+                f"owner_url 参数未设置 或者 获取账号数据失败，本次运行将临时使用 {temp_data} 作为账号昵称和 UID")
             temp_dict = {
                 "author": {
                     "nickname": temp_data,
@@ -87,8 +88,6 @@ class CollectionEndpoint(EndpointBase):
 
 
 class TestCollectionEndpoint(TestCase):
-    def setUp(self) -> None:
-        ...
 
     def test_run(self):
-        pass
+        CollectionEndpoint(create_test_core_params(), TestUserId).run()

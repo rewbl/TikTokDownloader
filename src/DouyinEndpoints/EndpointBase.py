@@ -1,17 +1,13 @@
 from urllib.parse import urlencode
 
-import urllib3
 from requests import request, exceptions
 from rich.progress import Progress, TextColumn, BarColumn, TimeElapsedColumn
-from urllib3.exceptions import InsecureRequestWarning
 
 from src.Infrastructure.custom import wait, PROGRESS
 from src.Infrastructure.encrypt import XBogus
 from src.config import RuntimeParameters
 from src.config.RuntimeParameters import RuntimeCoreParameters
 
-# Suppress only the single InsecureRequestWarning from urllib3 needed for unverified HTTPS requests.
-urllib3.disable_warnings(InsecureRequestWarning)
 
 class Encrypter:
     @staticmethod

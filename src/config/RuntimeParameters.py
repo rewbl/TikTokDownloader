@@ -26,6 +26,19 @@ if TYPE_CHECKING:
 __all__ = ["RuntimeParameters"]
 
 
+def update_cookie_session(cookie: dict | str) -> None | str:
+    parameters = (MsToken.get_real_ms_token(), TtWid.get_tt_wid(),)
+    if isinstance(cookie, dict):
+        for i in parameters:
+            if isinstance(i, dict):
+                cookie |= i
+    elif isinstance(cookie, str):
+        for i in parameters:
+            if isinstance(i, dict):
+                cookie += generate_cookie(i)
+        return cookie
+
+
 class RuntimeCoreParameters:
     logger = None
     console = None
@@ -33,6 +46,11 @@ class RuntimeCoreParameters:
     cookie = None
     headers = None
     max_pages = 100
+
+    def update_cookie_session(self) -> None:
+        if self.cookie:
+            update_cookie_session(self.cookie)
+            self.headers["Cookie"] = generate_cookie(self.cookie)
 
 
 class RuntimeParameters:
@@ -157,19 +175,6 @@ class RuntimeParameters:
         else:
             self.logger.warning("Cookie 参数格式错误")
         return {}
-
-    @staticmethod
-    def __add_cookie(cookie: dict | str) -> None | str:
-        parameters = (MsToken.get_real_ms_token(), TtWid.get_tt_wid(),)
-        if isinstance(cookie, dict):
-            for i in parameters:
-                if isinstance(i, dict):
-                    cookie |= i
-        elif isinstance(cookie, str):
-            for i in parameters:
-                if isinstance(i, dict):
-                    cookie += generate_cookie(i)
-            return cookie
 
     def __check_root(self, root: str) -> Path:
         if not root:
@@ -311,10 +316,10 @@ class RuntimeParameters:
     def update_cookie(self) -> None:
         # self.console.print("Update Cookie")
         if self.cookie:
-            self.__add_cookie(self.cookie)
+            update_cookie_session(self.cookie)
             self.headers["Cookie"] = generate_cookie(self.cookie)
         elif self.cookie_cache:
-            self.headers["Cookie"] = self.__add_cookie(self.cookie_cache)
+            self.headers["Cookie"] = update_cookie_session(self.cookie_cache)
 
     @staticmethod
     def __generate_ffmpeg_object(ffmpeg_path: str) -> FFMPEG:

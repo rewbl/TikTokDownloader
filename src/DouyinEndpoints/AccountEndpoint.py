@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from src.DouyinEndpoints.InfoEndpoint import InfoEndpoint
+from src.DouyinEndpoints.UserInfoEndpoint import UserInfoEndpoint
 from src.DouyinEndpoints.EndpointBase import EndpointBase
 from src.Infrastructure.tools import retry, timestamp
 from src.config import RuntimeParameters
@@ -25,7 +25,7 @@ class AccountEndpoint(EndpointBase):
         self.api, self.favorite, self.pages = self.check_type(
             tab, pages or params.max_pages)
         self.earliest, self.latest = self.check_date(earliest, latest)
-        self.info = InfoEndpoint(params, sec_user_id, cookie)
+        self.info = UserInfoEndpoint(params, sec_user_id, cookie)
 
     def check_type(self, tab: str, pages: int) -> tuple[str, bool, int]:
         if tab == "favorite":

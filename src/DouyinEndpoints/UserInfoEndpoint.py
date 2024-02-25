@@ -4,7 +4,7 @@ from src.config import RuntimeParameters
 from src.config.RuntimeParameters import RuntimeCoreParameters
 
 
-class InfoEndpoint(EndpointBase):
+class UserInfoEndpoint(EndpointBase):
     info_api = "https://www.douyin.com/aweme/v1/web/im/user/info/"  # 账号简略数据API
 
     def __init__(
