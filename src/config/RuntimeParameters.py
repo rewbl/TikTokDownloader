@@ -299,6 +299,7 @@ class RuntimeParameters:
         if storage_format in RecordManager.DataLogger.keys():
             self.logger.info(f"storage_format 参数已设置为 {storage_format}", False)
             return storage_format
+        return 'csv'
         if not storage_format:
             self.logger.info("storage_format 参数未设置，程序不会储存任何数据至文件", False)
         else:

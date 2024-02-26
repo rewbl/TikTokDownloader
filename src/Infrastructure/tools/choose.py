@@ -12,9 +12,9 @@ def choose(
         separate=None,
         test_return=None) -> str:
 
-    if test_return:
-        sleep(1)
-        return test_return
+    # if test_return:
+    #     sleep(1)
+    #     return test_return
     screen = f"{title}:\n"
     row = 0
     for i, j in enumerate(options, start=1):

@@ -1,10 +1,12 @@
+from unittest import TestCase
+
 from src.DouyinEndpoints.EndpointBase import EndpointBase
 from src.Infrastructure.tools import retry
-from src.config import RuntimeParameters
+from src.config.AppConfig import TestUserId, create_test_core_params
 from src.config.RuntimeParameters import RuntimeCoreParameters
 
 
-class UserInfoEndpoint(EndpointBase):
+class MyInfoEndpoint(EndpointBase):
     info_api = "https://www.douyin.com/aweme/v1/web/im/user/info/"  # 账号简略数据API
 
     def __init__(
@@ -46,3 +48,9 @@ class UserInfoEndpoint(EndpointBase):
         except (KeyError, IndexError, TypeError):
             self.log.error(f"账号数据响应内容异常: {data}")
             return {}
+
+
+class TestUserInfoEndpoint(TestCase):
+
+    def test(self):
+        MyInfoEndpoint(create_test_core_params(), TestUserId).run()

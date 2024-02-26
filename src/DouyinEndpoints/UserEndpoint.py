@@ -1,12 +1,15 @@
+from unittest import TestCase
+
 from src.DouyinEndpoints.EndpointBase import EndpointBase
 from src.Infrastructure.tools import retry
-from src.config import RuntimeParameters
+from src.config.AppConfig import create_test_core_params, TestUserId
+from src.config.RuntimeParameters import RuntimeCoreParameters
 
 
 class UserEndpoint(EndpointBase):
     user_api = "https://www.douyin.com/aweme/v1/web/user/profile/other/"  # 账号详细数据API
 
-    def __init__(self, params: RuntimeParameters, sec_user_id: str,
+    def __init__(self, params: RuntimeCoreParameters, sec_user_id: str,
                  cookie: str = None, ):
         super().__init__(params, cookie)
         self.sec_user_id = sec_user_id
@@ -41,3 +44,9 @@ class UserEndpoint(EndpointBase):
         except KeyError:
             self.log.error(f"账号数据响应内容异常: {data}")
             return {}
+
+class TestUserEndpoint(TestCase):
+    def test_run(self):
+        pass
+        user_endpoint = UserEndpoint(create_test_core_params(), 'MS4wLjABAAAAFLiU7BSSGKleJ6lkprNLcvgYIDnsUgLiMLOvdgm4xF4')
+        user_endpoint.run()

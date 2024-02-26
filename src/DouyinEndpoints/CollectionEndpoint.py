@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from src.DouyinEndpoints.UserInfoEndpoint import UserInfoEndpoint
+from src.DouyinEndpoints.MyInfoEndpoint import MyInfoEndpoint
 from src.DouyinEndpoints.EndpointBase import EndpointBase
 from src.Infrastructure.tools import retry, timestamp
 from src.config.AppConfig import create_test_core_params, TestUserId
@@ -28,7 +28,7 @@ class CollectionEndpoint(EndpointBase):
         super().__init__(params)
         self.pages = pages or params.max_pages
         self.sec_user_id = bool(sec_user_id)
-        self.info = UserInfoEndpoint(params, sec_user_id)
+        self.info = MyInfoEndpoint(params, sec_user_id)
 
     def run(self):
         with self.progress_object() as progress:

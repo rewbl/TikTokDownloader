@@ -4,7 +4,7 @@ from urllib3.exceptions import InsecureRequestWarning
 from src.Infrastructure.encrypt import XBogus
 from src.Infrastructure.module import ColorfulConsole
 from src.Infrastructure.module.cookie import generate_cookie
-from src.Infrastructure.record import BaseLogger
+from src.Infrastructure.record import BaseLogger, LoggerManager
 from src.config.RuntimeParameters import RuntimeCoreParameters
 
 urllib3.disable_warnings(InsecureRequestWarning)
@@ -68,11 +68,10 @@ def create_test_core_params():
     params.cookie = TestCookie
     params.console = ColorfulConsole()
     params.headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                      "Chrome/91.0.4472.124 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Cookie": generate_cookie(params.cookie)
     }
-    params.logger = BaseLogger('', params.console)
-    params.proxies = {}
+    params.logger = LoggerManager('', params.console)
+    params.proxies = {'http':None, 'https':None, 'ftp':None}
     params.update_cookie_session()
     return params
