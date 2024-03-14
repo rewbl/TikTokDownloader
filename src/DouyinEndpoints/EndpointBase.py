@@ -89,6 +89,7 @@ class EndpointBase(EndpointConst):
             method='get',
             headers=None,
             **kwargs) -> dict | bool:
+
         try:
             response = request(
                 method,

@@ -24,9 +24,9 @@ class CollectionEndpoint(EndpointBase):
     }
 
     def __init__(self, params: RuntimeCoreParameters, sec_user_id: str,
-                 pages: int = None, ):
+                 pages: int = 1000, ):
         super().__init__(params)
-        self.pages = pages or params.max_pages
+        self.pages = pages
         self.sec_user_id = bool(sec_user_id)
         self.info = MyInfoEndpoint(params, sec_user_id)
 
@@ -90,4 +90,6 @@ class CollectionEndpoint(EndpointBase):
 class TestCollectionEndpoint(TestCase):
 
     def test_run(self):
+        id=TestUserId
+        id='"MS4wLjABAAAA6YJT8LXtjIOUpeSaMdeNp9mbqhDViZET7aR25VtnM8oHnQTaic5NtflDiDm9RuFv"'
         CollectionEndpoint(create_test_core_params(), TestUserId).run()

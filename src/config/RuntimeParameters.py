@@ -45,7 +45,6 @@ class RuntimeCoreParameters:
     proxies = None
     cookie = None
     headers = None
-    max_pages = 100
 
     def update_cookie_session(self) -> None:
         if self.cookie:
@@ -377,5 +376,4 @@ def get_core_parameters(params: RuntimeParameters):
     cp.proxies = params.proxies
     cp.cookie = params.cookie
     cp.headers = params.headers
-    cp.max_pages = params.max_pages
     return cp
