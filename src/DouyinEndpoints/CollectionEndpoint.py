@@ -4,7 +4,7 @@ from src.DouyinEndpoints.MyInfoEndpoint import MyInfoEndpoint
 from src.DouyinEndpoints.EndpointBase import EndpointBase
 from src.Infrastructure.tools import retry, timestamp
 from src.config.AppConfig import create_test_core_params, TestUserId
-from src.config.RuntimeParameters import RuntimeCoreParameters
+from src.config.RuntimeParameters import DouyinSession
 from src.extract import Extractor
 
 
@@ -23,7 +23,7 @@ class CollectionEndpoint(EndpointBase):
         "downlink": "10",
     }
 
-    def __init__(self, params: RuntimeCoreParameters, sec_user_id: str,
+    def __init__(self, params: DouyinSession, sec_user_id: str,
                  pages: int = 1000, ):
         super().__init__(params)
         self.pages = pages
