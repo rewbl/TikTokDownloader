@@ -2,11 +2,9 @@ from http.cookiejar import Cookie
 from unittest.mock import Mock
 from urllib.parse import unquote, quote
 
-import requests
 from requests.cookies import RequestsCookieJar
 
 from src.StudioY.StudioYClient import get_account_id_and_cookie, StudioYClient
-from src.config.RuntimeParameters import update_cookie_session
 
 
 class DouyinSession:
@@ -32,7 +30,6 @@ class DouyinSession:
     def load_session(self):
         self.account_id, self.cookie = get_account_id_and_cookie(self.short_code)
         cookie_dict = self.__cookie_dict(self.cookie)
-        update_cookie_session(cookie_dict)
         self.cookie = self.__cookie_dict_to_str(cookie_dict)
         self.__parse_cookie_to_jar()
 
