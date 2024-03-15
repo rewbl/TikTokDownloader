@@ -4,21 +4,19 @@ from unittest import IsolatedAsyncioTestCase
 from src.DouyinEndpoints.EndpointBase import EndpointBase, Encrypter
 from src.Infrastructure.tools import retry
 from src.Services.DouyinScrapingSessionProvider import DouyinServicesInstance
+from src.StudioY.DouyinSession import DouyinSession
 from src.StudioY.StudioYClient import get_account_id_and_cookie
 from src.config.AppConfig import TestUserId
 
 
 class AwemeCollectionRequest:
     ...
-    sec_user_id: str
     cursor: str
 
     def fill_api_params(self, params):
-        params["sec_user_id"] = self.sec_user_id
         params["cursor"] = self.cursor
 
-    def __init__(self, sec_user_id: str = None, cursor: str = None):
-        self.sec_user_id = sec_user_id
+    def __init__(self, cursor: str = None):
         self.cursor = cursor
 
 
@@ -53,6 +51,7 @@ class AwemeCollectionResponse:
     def confirmed_success(self):
         return 'aweme_list' in self.raw_data and 'has_more' in self.raw_data
 
+
 class AwemeCollectionPrivateApi(EndpointBase):
     collection_api = "https://www.douyin.com/aweme/v1/web/aweme/listcollection/"  # 收藏API
     api_params = {
@@ -68,9 +67,7 @@ class AwemeCollectionPrivateApi(EndpointBase):
         "downlink": "10",
     }
 
-    def __init__(self):
-        accountId, cookie = get_account_id_and_cookie('J1')
-
+    def __init__(self, cookie):
         super().__init__(cookie=cookie)
 
     @retry
@@ -92,9 +89,11 @@ class AwemeCollectionPrivateApi(EndpointBase):
             return AwemeCollectionResponse.from_dict({})
         return AwemeCollectionResponse.from_dict(data)
 
+
 class IAwemeCollectionRecipient:
     def on_aweme_collection(self, aweme_list: List[Dict]) -> bool:
         return bool(aweme_list)
+
 
 class AwemeCollection:
     __last_request: AwemeCollectionRequest | None
@@ -103,10 +102,10 @@ class AwemeCollection:
     __can_continue: bool
     __load_complete: bool
 
-    def __init__(self, recipient: IAwemeCollectionRecipient = None):
+    def __init__(self, recipient: IAwemeCollectionRecipient = None, session: DouyinSession = None):
         self.recipient = recipient
-        self.session = DouyinServicesInstance.get_session()
-        self.api = AwemeCollectionPrivateApi()
+        self.session = session
+        self.api = AwemeCollectionPrivateApi(session.cookie)
         self.__last_request = None
         self.__last_response = None
         self.__can_continue = True
@@ -156,8 +155,10 @@ class AwemeCollection:
 class TestAwemeCollectionPrivateApi(IsolatedAsyncioTestCase):
 
     def test_request(self):
-        api = AwemeCollectionPrivateApi()
-        request = AwemeCollectionRequest(sec_user_id=TestUserId)
+        accountId, cookie = get_account_id_and_cookie('DF1')
+
+        api = AwemeCollectionPrivateApi(cookie)
+        request = AwemeCollectionRequest()
         response = api.request(request)
 
         self.assertIsNotNone(response)

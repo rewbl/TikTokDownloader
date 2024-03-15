@@ -16,7 +16,6 @@ class Encrypter:
 
 
 
-
 class EndpointBase:
 
     def __init__(self, cookie: str):
@@ -24,8 +23,9 @@ class EndpointBase:
         self.PC_headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             "Referer": "https://www.douyin.com/",
-            "Cookie": pass_to_cookie_test(cookie)
+            "Cookie": cookie
         }
+
 
 
 
@@ -35,7 +35,6 @@ class EndpointBase:
             params=None,
             data=None,
             method='get',) -> dict | bool:
-
         try:
             response = request(
                 method,
