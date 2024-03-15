@@ -5,7 +5,7 @@ from src.DouyinEndpoints.EndpointBase import EndpointBase, Encrypter
 from src.Infrastructure.tools import retry
 from src.Services.DouyinScrapingSessionProvider import DouyinServicesInstance
 from src.StudioY.StudioYClient import get_account_id_and_cookie
-from src.config.AppConfig import create_test_core_params, TestUserId
+from src.config.AppConfig import TestUserId
 
 
 class AwemeCollectionRequest:
