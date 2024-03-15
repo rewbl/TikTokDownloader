@@ -5,6 +5,7 @@ from src.Infrastructure.encrypt import XBogus
 from src.Infrastructure.module import ColorfulConsole
 from src.Infrastructure.module.cookie import generate_cookie
 from src.Infrastructure.record import BaseLogger, LoggerManager
+from src.config.RuntimeParameters import RuntimeCoreParameters
 
 urllib3.disable_warnings(InsecureRequestWarning)
 

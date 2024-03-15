@@ -39,6 +39,19 @@ def update_cookie_session(cookie: dict | str) -> None | str:
         return cookie
 
 
+class RuntimeCoreParameters:
+    logger = None
+    console = None
+    proxies = None
+    cookie = None
+    headers = None
+
+    def update_cookie_session(self) -> None:
+        return
+        if self.cookie:
+            update_cookie_session(self.cookie)
+            self.headers["Cookie"] = generate_cookie(self.cookie)
+
 
 class RuntimeParameters:
     name_keys = (
@@ -358,7 +371,7 @@ class RuntimeParameters:
 
 
 def get_core_parameters(params: RuntimeParameters):
-    cp = DouyinSession()
+    cp = RuntimeCoreParameters()
     cp.logger = params.logger
     cp.console = params.console
     cp.proxies = params.proxies

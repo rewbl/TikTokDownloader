@@ -56,7 +56,7 @@ def sync_bookmark(accountId, input: List[FavoriteVideoDto]) -> Result:
         'X-Requested-With': 'XMLHttpRequest'
     }
 
-    response = requests.post(url, headers=headers, json=[dto.dict() for dto in input], verify=False)
+    response = requests.post(url, headers=headers, json=[dto.model_dump() for dto in input], verify=False)
 
     # Prepare the result
     result = Result()
