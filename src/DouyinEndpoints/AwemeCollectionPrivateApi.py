@@ -1,14 +1,11 @@
 from typing import Any, List, Dict
-from unittest import TestCase, IsolatedAsyncioTestCase
+from unittest import IsolatedAsyncioTestCase
 
-from src.DouyinEndpoints.MyInfoEndpoint import MyInfoEndpoint
 from src.DouyinEndpoints.EndpointBase import EndpointBase, Encrypter
-from src.Infrastructure.tools import retry, timestamp
+from src.Infrastructure.tools import retry
 from src.Services.DouyinScrapingSessionProvider import DouyinServicesInstance
 from src.StudioY.StudioYClient import get_account_id_and_cookie
-from src.config.AppConfig import create_test_core_params, TestUserId
-from src.config.RuntimeParameters import RuntimeCoreParameters
-from src.extract import Extractor
+from src.config.AppConfig import TestUserId
 
 
 class AwemeCollectionRequest:
