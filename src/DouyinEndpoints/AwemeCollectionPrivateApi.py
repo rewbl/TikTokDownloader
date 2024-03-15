@@ -2,7 +2,7 @@ from typing import Any, List, Dict
 from unittest import TestCase, IsolatedAsyncioTestCase
 
 from src.DouyinEndpoints.MyInfoEndpoint import MyInfoEndpoint
-from src.DouyinEndpoints.EndpointBase import EndpointBase
+from src.DouyinEndpoints.EndpointBase import EndpointBase, Encrypter
 from src.Infrastructure.tools import retry, timestamp
 from src.Services.DouyinScrapingSessionProvider import DouyinServicesInstance
 from src.StudioY.StudioYClient import get_account_id_and_cookie
@@ -80,7 +80,7 @@ class AwemeCollectionPrivateApi(EndpointBase):
     def request(self, request: AwemeCollectionRequest) -> AwemeCollectionResponse:
         params = self.api_params.copy()
         request.fill_api_params(params)
-        self.deal_url_params(params)
+        Encrypter.encrypt_request(params, 'msToken', 8)
         form = {
             "count": "30",
             "cursor": request.cursor,
@@ -109,7 +109,7 @@ class AwemeCollection:
     def __init__(self, recipient: IAwemeCollectionRecipient = None):
         self.recipient = recipient
         self.session = DouyinServicesInstance.get_session()
-        self.api = AwemeCollectionPrivateApi(create_test_core_params())
+        self.api = AwemeCollectionPrivateApi()
         self.__last_request = None
         self.__last_response = None
         self.__can_continue = True
