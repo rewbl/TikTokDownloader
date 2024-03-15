@@ -69,7 +69,7 @@ def create_test_core_params():
     params.console = ColorfulConsole()
     params.headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Cookie": generate_cookie(params.cookie)
+        "Referer": "https://www.douyin.com/"
     }
     params.logger = LoggerManager('', params.console)
     params.proxies = {'http':None, 'https':None, 'ftp':None}

@@ -8,7 +8,7 @@ def retry(function):
 
     def inner(self, *args, **kwargs):
         finished = kwargs.pop("finished", False)
-        for i in range(self.max_retry):
+        for i in range(3):
             if result := function(self, *args, **kwargs):
                 return result
             self.log.warning(f"正在尝试第 {i + 1} 次重试")
