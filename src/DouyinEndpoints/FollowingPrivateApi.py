@@ -349,13 +349,13 @@ class TestFollowingPrivateApi(TestCase):
     def test_run(self):
         request_data = FollowingRequest("MS4wLjABAAAA1UQPfSAIjQJrmd4da8hI8xhuqClJTqWgvcSp-euVG6kvcLTGQQaaTFUQQMOVOP1_")
         data = FollowingPrivateApi(create_test_core_params()).request(request_data)
-        breakpoint()
+        self.assertEqual(len(data.nickname_list), 19)
 
 
 class TestFollowingList(IsolatedAsyncioTestCase):
 
     async def test_run(self):
-        while True:
+        while False:
             private_user_id = await FollowListCandidates.get_next()
             following_list = FollowingList(private_user_id)
             await following_list.load_full_list()

@@ -100,7 +100,6 @@ class EndpointBase(EndpointConst):
                 headers=headers or self.PC_headers,
                 verify=False,
                 **kwargs)
-            wait()
         except (
                 exceptions.ProxyError,
                 exceptions.SSLError,
