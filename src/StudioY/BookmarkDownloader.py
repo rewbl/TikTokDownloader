@@ -1,9 +1,11 @@
+import re
 from unittest import IsolatedAsyncioTestCase
 
 from src.DouyinEndpoints.AwemeCollectionPrivateApi import AwemeCollection
 from src.StudioY.DouyinSession import DouyinSession
 from src.StudioY.StudioYClient import StudioYClient
 from src.StudioY.SyncBookmarks import AwemeCollectionRecipient
+from datetime import datetime
 
 client = StudioYClient()
 
@@ -14,8 +16,21 @@ async def async_bookmark(account_code):
     collection = AwemeCollection(AwemeCollectionRecipient(session.account_id), session)
     await collection.load_full_list()
 
+
+def _create_filename(v):
+    author = v['douyinUser']['nickname']
+    time = datetime.fromtimestamp(v['createTime'])
+    time_str = f'{time.month}月{time.day}日 {time.hour}时{time.minute}分'
+    caption = v['caption']
+    awemeId = v['awemeId']
+
+    filename = f"{time_str}-【{author}】-{caption}-{awemeId}.mp4"
+    filename = re.sub(r'[\\/*?:"<>|#\n\r]', '', filename)
+    return filename
+
+
 def download_recent_videos(short_code):
-    folder ={
+    folder = {
         "DF1": "DF1",
         "DF2": "DF2",
         "J1": "J1",
@@ -27,11 +42,11 @@ def download_recent_videos(short_code):
         return
 
     account_id = result['data']
-    start_minutes_offset = 24 * 60
-    vs = client.get_pending_videos(account_id, start_minutes_offset)
+    start_minutes_offset = 2 * 60
+    vs = client.get_pending_videos(account_id, start_minutes_offset, True)
     for v in vs["data"]:
         url = v["bestBitRateUrl"]
-        filename = f"{v['awemeId']}.mp4"
+        filename = _create_filename(v)
         for i in range(3):
             try:
                 client.download_video(url, f'C:/SourceCode/TikTokDownloader/{folder}/{filename}')
@@ -41,10 +56,8 @@ def download_recent_videos(short_code):
         client.set_downloaded(account_id, v["id"])
 
 
-
-
 class TestSyncAndDownload(IsolatedAsyncioTestCase):
     async def test_sync_bookmark(self):
-        account_code = 'BL1'
+        account_code = 'DF1'
         await async_bookmark(account_code)
         download_recent_videos(account_code)
