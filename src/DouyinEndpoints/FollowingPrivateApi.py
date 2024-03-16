@@ -6,7 +6,6 @@ from src.DouyinEndpoints.EndpointBase import EndpointBase, Encrypter
 from src.Infrastructure.Database.MainDouyinMongoDb import DouyinDb
 from src.Services.DouyinScrapingSessionProvider import DouyinServicesInstance
 from src.config.AppConfig import create_test_core_params
-from src.config.RuntimeParameters import DouyinSession
 
 import time
 from motor.motor_asyncio import AsyncIOMotorCollection
@@ -148,9 +147,9 @@ class FollowingPrivateApi(EndpointBase):
     }
 
     # rest of the class
-    def __init__(self, params: DouyinSession):
+    def __init__(self):
         cookie='ttwid=1%7ChWHeTbIqkY8ccxTJ4SgrY6KxrytkmeOo2ZMkKsqb9FE%7C1706662275%7C5e8218e0ccdfb8f5fdb0bb57e28ea07527446c696d31faf82b57c1cf7b22b461; douyin.com; device_web_cpu_core=12; device_web_memory_size=8; architecture=amd64; csrf_session_id=825bbee3fb626ec3eeaa6b77c1834e7d; passport_csrf_token=1aaa5c2935cde8fb44dbf1f6bc03529f; passport_csrf_token_default=1aaa5c2935cde8fb44dbf1f6bc03529f; bd_ticket_guard_client_web_domain=2; s_v_web_id=verify_lsbcdmy1_ABiSOfiJ_lpD2_4w2Y_9JCO_95bLi5YHy4oD; __ac_nonce=065f39d37008166efa1a9; __ac_signature=_02B4Z6wo00f01oAD7OAAAIDDHJhfL5q6l3qAI-hAAMX.Fof3YU1CAUg30L5sMQ40dHlh-pW7WnxSFP7bIRnSkorFKR.iXvb7Cs1si1BdeVTgQmZCzY6R.98WA4G6YIKH1.vda9aMO2PVHx8f68; dy_swidth=3840; dy_sheight=2160; stream_recommend_feed_params=%22%7B%5C%22cookie_enabled%5C%22%3Atrue%2C%5C%22screen_width%5C%22%3A3840%2C%5C%22screen_height%5C%22%3A2160%2C%5C%22browser_online%5C%22%3Atrue%2C%5C%22cpu_core_num%5C%22%3A12%2C%5C%22device_memory%5C%22%3A8%2C%5C%22downlink%5C%22%3A10%2C%5C%22effective_type%5C%22%3A%5C%224g%5C%22%2C%5C%22round_trip_time%5C%22%3A50%7D%22; strategyABtestKey=%221710464324.032%22; FORCE_LOGIN=%7B%22isForcePopClose%22%3A1%2C%22videoConsumedRemainSeconds%22%3A180%7D; my_rd=2; passport_assist_user=Cj9RHL9vlYiB33ioblSUBki_x9hZWadZOQkRfZT3h3VRH0ZZyYtW3T7HMWGPwZu8vOT4uhS1WonBsXgzlIO_cuoaSgo8aOkxSmvq-GKcMMJFlwgbPOScMXlHI8uZQ1nVZepvzncWAk7wrMH_VfNql30etCSdz_1DYzK-wDQz9P8eEL_7yw0Yia_WVCABIgEDJ5xwuA%3D%3D; n_mh=ToxDUIP1EE3Cs1qx5eTeCuSc1F_HYF22_NWbPp3NqWA; sso_uid_tt=1d76fcbce0941363979a79ddebed3c2e; sso_uid_tt_ss=1d76fcbce0941363979a79ddebed3c2e; toutiao_sso_user=851c9a07f8f99b4d7fc03dca736c4a55; toutiao_sso_user_ss=851c9a07f8f99b4d7fc03dca736c4a55; sid_ucp_sso_v1=1.0.0-KDhmZTExYTVkNTljOGFmYWJjMzM0NGYyNTc5MGQxMmYyYjA1NTMzMzkKHgjj0KC48M0MEJ27zq8GGO8xIAwwguLBpwY4BkD0BxoCbHEiIDg1MWM5YTA3ZjhmOTliNGQ3ZmMwM2RjYTczNmM0YTU1; ssid_ucp_sso_v1=1.0.0-KDhmZTExYTVkNTljOGFmYWJjMzM0NGYyNTc5MGQxMmYyYjA1NTMzMzkKHgjj0KC48M0MEJ27zq8GGO8xIAwwguLBpwY4BkD0BxoCbHEiIDg1MWM5YTA3ZjhmOTliNGQ3ZmMwM2RjYTczNmM0YTU1; passport_auth_status=ec5d92882df6201a52a9cf03232e00e2%2C; passport_auth_status_ss=ec5d92882df6201a52a9cf03232e00e2%2C; uid_tt=be2a16dcbeaadf6d5dc2a80273de2cc9; uid_tt_ss=be2a16dcbeaadf6d5dc2a80273de2cc9; sid_tt=224302418918382daf16f1dd2a7a16c1; sessionid=224302418918382daf16f1dd2a7a16c1; sessionid_ss=224302418918382daf16f1dd2a7a16c1; LOGIN_STATUS=1; _bd_ticket_crypt_doamin=2; _bd_ticket_crypt_cookie=660736874ef54a5073a7e7081c800ab9; __security_server_data_status=1; store-region=de; store-region-src=uid; sid_guard=224302418918382daf16f1dd2a7a16c1%7C1710464420%7C5183996%7CTue%2C+14-May-2024+01%3A00%3A16+GMT; sid_ucp_v1=1.0.0-KDJhYjUyMzJhMzQzMDc1OTVhMjU0MWVjYzg2ZjVmN2E0OTI2YTVlYmMKGgjj0KC48M0MEKS7zq8GGO8xIAw4BkD0B0gEGgJscSIgMjI0MzAyNDE4OTE4MzgyZGFmMTZmMWRkMmE3YTE2YzE; ssid_ucp_v1=1.0.0-KDJhYjUyMzJhMzQzMDc1OTVhMjU0MWVjYzg2ZjVmN2E0OTI2YTVlYmMKGgjj0KC48M0MEKS7zq8GGO8xIAw4BkD0B0gEGgJscSIgMjI0MzAyNDE4OTE4MzgyZGFmMTZmMWRkMmE3YTE2YzE; publish_badge_show_info=%220%2C0%2C0%2C1710464422917%22; home_can_add_dy_2_desktop=%221%22; bd_ticket_guard_client_data=eyJiZC10aWNrZXQtZ3VhcmQtdmVyc2lvbiI6MiwiYmQtdGlja2V0LWd1YXJkLWl0ZXJhdGlvbi12ZXJzaW9uIjoxLCJiZC10aWNrZXQtZ3VhcmQtcmVlLXB1YmxpYy1rZXkiOiJCTUpUMUF0cit1ayt5U0dWYlZYVlVoRW51RmdpUk1NbGxSbUJtSUZOa28yOTJpSkdzU084SitrcDEybmg0b0xsYSs3UWxSckdhTWRubjluRWFzc2JiNVk9IiwiYmQtdGlja2V0LWd1YXJkLXdlYi12ZXJzaW9uIjoxfQ%3D%3D; passport_fe_beating_status=true; msToken=BSJO3XvNh8FprXs9-AWq-i_QduFJ9-MFdHzdSAlhR_zldueH04NNCrCy_qLHA0OnFW886GYXop1kUdkQW1UwCQkPNkdVhkpqrSqVVGUcdWHKJ78-xVdasxKL5pPb; tt_scid=pppMK1-0kXstPcEGHmkk75P.hUjyRDqpwKqHwF08MkZAmzXL3iF-IcWQFsPqaN.Ud2b0; msToken=0leamNrc1IsTWsD9mqw8RutP-cKic3b4HQDsJ2G1M-ZwhEn4kXe1bltYIi9payWlICCsxTNFIltZzQN5YVyfFzd2F_ydEaYNXNN5Jb0e7UD2IKVQFL8VIUrlFgEH; odin_tt=76020aeebc1a3386e5a156b200a0a66003cbe599d35ce0793c6eca8a577e7b19be2dddcbf58a0efe2ffc468f0c0257796f88036d7cfdf4f318cde37ef543f664; download_guide=%223%2F20240314%2F0%22; pwa2=%220%7C0%7C3%7C0%22; IsDouyinActive=true'
-        super().__init__(params, cookie=cookie)
+        super().__init__(cookie=cookie)
 
     def request(self, request_data: FollowingRequest) -> FollowingResponse:
         params = self.api_params.copy()
@@ -348,7 +347,7 @@ class TestFollowingPrivateApi(TestCase):
 
     def test_run(self):
         request_data = FollowingRequest("MS4wLjABAAAA1UQPfSAIjQJrmd4da8hI8xhuqClJTqWgvcSp-euVG6kvcLTGQQaaTFUQQMOVOP1_")
-        data = FollowingPrivateApi(create_test_core_params()).request(request_data)
+        data = FollowingPrivateApi().request(request_data)
         self.assertEqual(len(data.nickname_list), 19)
 
 
