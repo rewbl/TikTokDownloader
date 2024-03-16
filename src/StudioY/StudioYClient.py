@@ -5,20 +5,20 @@ import json
 
 
 class StudioYClient:
-    def __init__(self, base_url='https://localhost:44358/api/douyin-accounts'):
+    def __init__(self, base_url='https://localhost:44358/api'):
         self.base_url = base_url
 
     def get_cookie(self, account_id):
-        response = requests.get(f'{self.base_url}/cookie', params={'accountId': account_id}, verify=False)
+        response = requests.get(f'{self.base_url}/douyin-accounts/cookie', params={'accountId': account_id}, verify=False)
         return response.json()
 
     def set_cookie(self, account_id, cookie):
-        response = requests.put(f'{self.base_url}/cookie', params={'accountId': account_id},
+        response = requests.put(f'{self.base_url}//douyin-accounts/cookie', params={'accountId': account_id},
                                 data=json.dumps(cookie), headers={'Content-Type': 'application/json'}, verify=False)
         return response.json()
 
     def get_account_id_by_short_code(self, short_code):
-        response = requests.get(f'{self.base_url}/account-id', params={'shortCode': short_code}, verify=False)
+        response = requests.get(f'{self.base_url}/douyin-accounts/account-id', params={'shortCode': short_code}, verify=False)
         return response.json()
 
     def download_video(self, url, file_name):
@@ -34,7 +34,7 @@ class StudioYClient:
 
     def get_pending_videos(self, account_id, start_minutes_offset):
         response = requests.get(f"{self.base_url}/bookmarks/pending-download?accountId={account_id}"
-                                f"&includeDownloaded={'true'}&startMinutesOffset={start_minutes_offset}", verify=False)
+                                f"&includeDownloaded={'false'}&startMinutesOffset={start_minutes_offset}", verify=False)
         return response.json()
 
     def set_downloaded(self, account_id, video_id):

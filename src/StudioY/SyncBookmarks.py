@@ -1,5 +1,5 @@
 from typing import List, Optional, Generic, TypeVar, Dict
-from unittest import TestCase, IsolatedAsyncioTestCase
+from unittest import IsolatedAsyncioTestCase
 
 import requests
 from pydantic import BaseModel
@@ -7,10 +7,6 @@ from pydantic import BaseModel
 from src.DouyinEndpoints.AwemeCollectionPrivateApi import  AwemeCollection
 from src.StudioY.DouyinSession import DouyinSession
 
-CurrentDouyinAccountShortCode='BH1'
-CurrentDouyinAccountId = ''
-
-CurrentDouyinSession = DouyinSession(CurrentDouyinAccountShortCode)
 
 class DouyinAuthorDto(BaseModel):
     Uid: Optional[str] = None
@@ -69,6 +65,13 @@ def sync_bookmark(accountId, input: List[FavoriteVideoDto]) -> Result:
     return result
 
 class AwemeCollectionRecipient:
+
+    account_id: str = None
+
+    def __init__(self, account_id: str = None):
+        self.account_id = account_id
+
+
     def on_aweme_collection(self, aweme_list: List[Dict]) -> bool:
 
         if not aweme_list:
@@ -82,7 +85,7 @@ class AwemeCollectionRecipient:
             except Exception as e:
                 print(e)
 
-        result = sync_bookmark(CurrentDouyinAccountId, input[::-1])
+        result = sync_bookmark(self.account_id, input[::-1])
         if not result.IsSuccess:
             breakpoint()
 
@@ -93,10 +96,9 @@ class AwemeCollectionRecipient:
 
 class TestSyncBookmarks2(IsolatedAsyncioTestCase):
     async def test_sync_bookmark(self):
-        global CurrentDouyinSession, CurrentDouyinAccountId
-        CurrentDouyinSession.load_session()
-        CurrentDouyinAccountId = CurrentDouyinSession.account_id
-        collection = AwemeCollection(AwemeCollectionRecipient(), CurrentDouyinSession)
+        session = DouyinSession('J1')
+        session.load_session()
+        collection = AwemeCollection(AwemeCollectionRecipient(session.account_id), session)
         await collection.load_full_list()
         breakpoint()
 

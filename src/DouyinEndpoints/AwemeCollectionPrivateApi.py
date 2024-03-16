@@ -65,8 +65,6 @@ class AwemeCollectionPrivateApi(EndpointBase):
         "downlink": "10",
     }
 
-    def __init__(self, cookie):
-        super().__init__(cookie=cookie)
 
     @retry
     def request(self, request: AwemeCollectionRequest) -> AwemeCollectionResponse:
