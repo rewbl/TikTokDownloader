@@ -4,13 +4,13 @@ from unittest import TestCase, IsolatedAsyncioTestCase
 import requests
 from pydantic import BaseModel
 
-from src.DouyinEndpoints.AwemeCollectionPrivateApi import get_sample_aweme_list, AwemeCollection
+from src.DouyinEndpoints.AwemeCollectionPrivateApi import  AwemeCollection
 from src.StudioY.DouyinSession import DouyinSession
 
-CurrentDouyinAccountShortCode='J1'
+CurrentDouyinAccountShortCode='BH1'
 CurrentDouyinAccountId = ''
 
-CurrentDouyinSession = DouyinSession('J1')
+CurrentDouyinSession = DouyinSession(CurrentDouyinAccountShortCode)
 
 class DouyinAuthorDto(BaseModel):
     Uid: Optional[str] = None
@@ -60,17 +60,16 @@ def sync_bookmark(accountId, input: List[FavoriteVideoDto]) -> Result:
 
     # Prepare the result
     result = Result()
-    result.Data = response.json() if response.status_code == 200 else None
-    result.IsSuccess = response.status_code == 200
-    result.Message = 'Success' if result.IsSuccess else 'Failure'
-    result.Code = str(response.status_code)
+    json = response.json() if response.status_code == 200 else None
+    result.IsSuccess = response.status_code == 200 and json['isSuccess']
+    result.Message = json['message']
+    result.Code = json['code']
+    result.Data = json['data']
 
     return result
 
 class AwemeCollectionRecipient:
     def on_aweme_collection(self, aweme_list: List[Dict]) -> bool:
-        breakpoint()
-        return True
 
         if not aweme_list:
             breakpoint()
@@ -87,13 +86,16 @@ class AwemeCollectionRecipient:
         if not result.IsSuccess:
             breakpoint()
 
-        count = result.Data['addedCount'] + result.Data['updatedCount']
-        return bool(count)
+        dded_total = result.Data['addedTotal']
+        updated_total = result.Data['updatedTotal']
+        print(f"Added {dded_total} and updated {updated_total} bookmarks")
+        return bool(dded_total)
+
 class TestSyncBookmarks2(IsolatedAsyncioTestCase):
     async def test_sync_bookmark(self):
-        global CurrentDouyinSession
+        global CurrentDouyinSession, CurrentDouyinAccountId
         CurrentDouyinSession.load_session()
-
+        CurrentDouyinAccountId = CurrentDouyinSession.account_id
         collection = AwemeCollection(AwemeCollectionRecipient(), CurrentDouyinSession)
         await collection.load_full_list()
         breakpoint()
@@ -128,8 +130,3 @@ def create_video_dto(aweme) -> FavoriteVideoDto:
         ShareCount=aweme['statistics']['share_count']
     )
 
-
-class TestCreateDto(TestCase):
-    def test_create_author_dto(self):
-        dto = create_video_dto(get_sample_aweme_list()[0])
-        breakpoint()

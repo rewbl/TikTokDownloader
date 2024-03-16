@@ -3,10 +3,8 @@ from unittest import IsolatedAsyncioTestCase
 
 from src.DouyinEndpoints.EndpointBase import EndpointBase, Encrypter
 from src.Infrastructure.tools import retry
-from src.Services.DouyinScrapingSessionProvider import DouyinServicesInstance
 from src.StudioY.DouyinSession import DouyinSession
 from src.StudioY.StudioYClient import get_account_id_and_cookie
-from src.config.AppConfig import TestUserId
 
 
 class AwemeCollectionRequest:
