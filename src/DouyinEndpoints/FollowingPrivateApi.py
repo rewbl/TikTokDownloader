@@ -2,7 +2,7 @@ import asyncio
 from typing import Any, List
 from unittest import TestCase, IsolatedAsyncioTestCase
 
-from src.DouyinEndpoints.EndpointBase import EndpointBase
+from src.DouyinEndpoints.EndpointBase import EndpointBase, Encrypter
 from src.Infrastructure.Database.MainDouyinMongoDb import DouyinDb
 from src.Services.DouyinScrapingSessionProvider import DouyinServicesInstance
 from src.config.AppConfig import create_test_core_params
@@ -155,7 +155,9 @@ class FollowingPrivateApi(EndpointBase):
     def request(self, request_data: FollowingRequest) -> FollowingResponse:
         params = self.api_params.copy()
         request_data.fill_api_params(params)
-        self.deal_url_params(params)
+        Encrypter.encrypt_request(params, 'self._get_ms_token()', 8)
+
+        # self.deal_url_params(params)
         if not (
                 data := self.send_request(
                     self.collection_api,
@@ -347,6 +349,7 @@ class TestFollowingPrivateApi(TestCase):
     def test_run(self):
         request_data = FollowingRequest("MS4wLjABAAAA1UQPfSAIjQJrmd4da8hI8xhuqClJTqWgvcSp-euVG6kvcLTGQQaaTFUQQMOVOP1_")
         data = FollowingPrivateApi(create_test_core_params()).request(request_data)
+        breakpoint()
 
 
 class TestFollowingList(IsolatedAsyncioTestCase):
