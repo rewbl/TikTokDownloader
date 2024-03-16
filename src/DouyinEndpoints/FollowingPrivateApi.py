@@ -4,7 +4,6 @@ from unittest import TestCase, IsolatedAsyncioTestCase
 
 from src.DouyinEndpoints.EndpointBase import EndpointBase, Encrypter
 from src.Infrastructure.Database.MainDouyinMongoDb import DouyinDb
-from src.Services.DouyinScrapingSessionProvider import DouyinServicesInstance
 from src.StudioY.StudioYClient import get_account_id_and_cookie
 from src.config.AppConfig import create_test_core_params
 
@@ -206,10 +205,9 @@ class FollowingList:
     __can_continue: bool
     __load_complete: bool
 
-    def __init__(self, sec_user_id: str):
+    def __init__(self, sec_user_id: str, cookie):
         self.sec_user_id = sec_user_id
-        self.session = DouyinServicesInstance.get_session()
-        self.api = FollowingPrivateApi(self.session.get_core_params())
+        self.api = FollowingPrivateApi(cookie)
         self.start_time = None
         self.end_time = None
         self.start_total = None
@@ -253,7 +251,7 @@ class FollowingList:
 
         if self.__last_response.confirmed_success:
             await self.__process_success_response()
-            # await asyncio.sleep(3)
+            await asyncio.sleep(1)
 
         else:
             await self.__process_failed_response()
@@ -272,6 +270,7 @@ class FollowingList:
         await self.__save_following_relations()
         self.__update_list_status_after_success()
         await self.__save_current_status()
+        print(self.__last_success_response.nickname_list)
 
     async def __save_followings_users(self):
         await NewUserList(self.__last_success_response.followings).save()
@@ -351,7 +350,8 @@ class TestFollowingPrivateApi(TestCase):
 class TestFollowingList(IsolatedAsyncioTestCase):
 
     async def test_run(self):
+        _, cookie = get_account_id_and_cookie('DF1')
         while True:
             private_user_id = await FollowListCandidates.get_next()
-            following_list = FollowingList(private_user_id)
+            following_list = FollowingList(private_user_id, cookie)
             await following_list.load_full_list()

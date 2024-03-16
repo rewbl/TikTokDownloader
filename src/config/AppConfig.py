@@ -64,6 +64,7 @@ TestCookie = {
 
 
 def create_test_core_params():
+    raise NotImplementedError("This method is not implemented")
     params = RuntimeCoreParameters()
     params.cookie = TestCookie
     params.console = ColorfulConsole()
