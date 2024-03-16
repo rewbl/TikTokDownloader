@@ -1,0 +1,1 @@
+select * from DouyinUserVideos where DownloadTime is null;

@@ -3,7 +3,6 @@ from unittest import TestCase
 from src.DouyinEndpoints.EndpointBase import EndpointBase
 from src.Infrastructure.tools import retry
 from src.config.AppConfig import TestUserId, create_test_core_params
-from src.config.RuntimeParameters import RuntimeCoreParameters
 
 
 class MyInfoEndpoint(EndpointBase):
@@ -11,7 +10,7 @@ class MyInfoEndpoint(EndpointBase):
 
     def __init__(
             self,
-            params: RuntimeCoreParameters,
+            params,
             sec_user_id: str,
             cookie: str = None):
         super().__init__(params, cookie)

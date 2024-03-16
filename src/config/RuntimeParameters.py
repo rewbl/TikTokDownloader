@@ -47,6 +47,7 @@ class RuntimeCoreParameters:
     headers = None
 
     def update_cookie_session(self) -> None:
+        return
         if self.cookie:
             update_cookie_session(self.cookie)
             self.headers["Cookie"] = generate_cookie(self.cookie)

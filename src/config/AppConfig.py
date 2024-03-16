@@ -73,5 +73,5 @@ def create_test_core_params():
     }
     params.logger = LoggerManager('', params.console)
     params.proxies = {'http':None, 'https':None, 'ftp':None}
-    # params.update_cookie_session()
+    params.update_cookie_session()
     return params
