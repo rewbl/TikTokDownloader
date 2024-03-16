@@ -9,67 +9,20 @@ cookie = '_ttp=2MYJvt2pN7OZmPqz21Crv3OQi0U; tt_csrf_token=3zgtMKET-3NGszpnqQO5v2
 
 
 class TikTokTest(TestCase):
-    def test(self):
-        url ='https://www.tiktok.com/api/explore/item_list/?aid=1988&categoryType=119&count=16'
+
+
+    def test_api(self):
+
+        url = "https://tiktok-private1.p.rapidapi.com/user/get-by-username"
+
+        querystring = {"username": "zengboling0"}
+
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-            'Referer': 'https://www.tiktok.com',
-            'Cookie': cookie
-        }
-        response = requests.get(url, headers=headers, verify=False)
-        print(response.json())
-
-
-
-    def test2(self):
-        msToken='wBvDcYBFNASTr-3q4y9dyX9S3zQ559ro--HFz2FcB6tg8GoewZUhtCipx6Z_9J11noUoCxbO2bHb2Iw_fDtcHDSzJ1FDiXHLS46qTOI1ly7yoVbf-M7zSsgSR6pUG8rnAU1K2uY='
-        api_params = {
-            "WebIdLastTime": "1710564093",
-            "aid": "1988",
-            "app_language": "en",
-            "app_name": "tiktok_web",
-            "browser_language": "en-US",
-            "browser_name": "Mozilla",
-            "browser_online": "true",
-            "browser_platform": "Win32",
-            "browser_version": "5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-            "channel": "tiktok_web",
-            "cookie_enabled": "true",
-            "count": "35",
-            "coverFormat": "2",
-            "cursor": "1710473119000",
-            "device_id": "7339230529303594528",
-            "device_platform": "web_pc",
-            "focus_state": "false",
-            "from_page": "user",
-            "history_len": "8",
-            "is_fullscreen": "false",
-            "is_page_visible": "true",
-            "language": "en",
-            "os": "windows",
-            "priority_region": "US",
-            "referer": "",
-            "region": "DE",
-            "screen_height": "2160",
-            "screen_width": "3840",
-            "secUid": "MS4wLjABAAAApEbAzLsl3uVGmWPeCcK0xfFtGutTrSQZTkQPyjvPuxPNdh3GZAmVWfgJTj8tjaC8",
-            "tz_name": "America/Los_Angeles",
-            "verifyFp": "verify_lq7f7x9g_FNE66wFk_sGJs_4cdU_ARyx_di8PoOZZs0qx",
-            "webcast_language": "en",
-        }
-        url = 'https://www.tiktok.com/api/post/item_list/'
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-            'Referer': 'https://www.tiktok.com',
-            'Cookie': cookie
+            "X-RapidAPI-Key": "780c70b335mshfca6c6f1d5adecfp1977b1jsna4a4df21667f",
+            "X-RapidAPI-Host": "tiktok-private1.p.rapidapi.com"
         }
 
-        Encrypter.encrypt_request(api_params, msToken, 4)
-        response =request(
-            'get',
-            url,
-            params=api_params,
-            headers=headers,
-            verify=False)
-        data = response.json()
+        response = requests.get(url, headers=headers, params=querystring)
+
+        data=response.json()
         breakpoint()
