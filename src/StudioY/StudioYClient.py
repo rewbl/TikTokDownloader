@@ -32,9 +32,9 @@ class StudioYClient:
                 if chunk:
                     file.write(chunk)
 
-    def get_pending_videos(self, account_id, start_minutes_offset):
+    def get_pending_videos(self, account_id, start_minutes_offset, include_downloaded=False):
         response = requests.get(f"{self.base_url}/bookmarks/pending-download?accountId={account_id}"
-                                f"&includeDownloaded={'false'}&startMinutesOffset={start_minutes_offset}", verify=False)
+                                f"&includeDownloaded={include_downloaded}&startMinutesOffset={start_minutes_offset}", verify=False)
         return response.json()
 
     def set_downloaded(self, account_id, video_id):
