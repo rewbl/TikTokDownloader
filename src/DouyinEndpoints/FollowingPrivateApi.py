@@ -350,7 +350,7 @@ class TestFollowingPrivateApi(TestCase):
 class TestFollowingList(IsolatedAsyncioTestCase):
 
     async def test_run(self):
-        _, cookie = get_account_id_and_cookie('DF1')
+        _, cookie = get_account_id_and_cookie('BL1')
         while True:
             private_user_id = await FollowListCandidates.get_next()
             following_list = FollowingList(private_user_id, cookie)

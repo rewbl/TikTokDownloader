@@ -42,8 +42,8 @@ def download_recent_videos(short_code):
         return
 
     account_id = result['data']
-    start_minutes_offset = 2 * 60
-    vs = client.get_pending_videos(account_id, start_minutes_offset, True)
+    start_minutes_offset = 10 * 60
+    vs = client.get_pending_videos(account_id, start_minutes_offset, False)
     for v in vs["data"]:
         url = v["bestBitRateUrl"]
         filename = _create_filename(v)

@@ -89,10 +89,10 @@ class AwemeCollectionRecipient:
         if not result.IsSuccess:
             breakpoint()
 
-        dded_total = result.Data['addedTotal']
+        added_total = result.Data['addedTotal']
         updated_total = result.Data['updatedTotal']
-        print(f"Added {dded_total} and updated {updated_total} bookmarks")
-        return bool(dded_total)
+        print(f"Added {added_total} and updated {updated_total} bookmarks")
+        return bool(added_total + updated_total)
 
 class TestSyncBookmarks2(IsolatedAsyncioTestCase):
     async def test_sync_bookmark(self):
