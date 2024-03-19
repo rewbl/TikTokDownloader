@@ -4,7 +4,7 @@ from unittest import IsolatedAsyncioTestCase
 import requests
 from pydantic import BaseModel
 
-from DouyinEndpoints import  AwemeCollection
+from DouyinEndpoints.AwemeCollectionPrivateApi import AwemeCollection
 from StudioY.DouyinSession import DouyinSession
 
 
