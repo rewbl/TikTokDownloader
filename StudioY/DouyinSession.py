@@ -58,13 +58,6 @@ def _cookie_jar_to_header(cookie_jar: RequestsCookieJar) -> str:
     return '; '.join(cookie_list)
 
 
-def pass_to_cookie_test(cookie_header: str) -> str:
-    cookie_dict = _cookie_dict(cookie_header)
-    cookie_header = _cookie_dict_to_str(cookie_dict)
-    cookie_jar = RequestsCookieJar()
-    _parse_cookie_to_jar(cookie_jar, cookie_header)
-    return _cookie_jar_to_header(cookie_jar)
-
 
 class DouyinSession:
     short_code: str
