@@ -1,9 +1,9 @@
 from typing import Any, List, Dict
 from unittest import IsolatedAsyncioTestCase
 
-from src.DouyinEndpoints.EndpointBase import EndpointBase, Encrypter
-from src.StudioY.DouyinSession import DouyinSession
-from src.StudioY.StudioYClient import get_account_id_and_cookie
+from DouyinEndpoints.EndpointBase import EndpointBase, Encrypter
+from StudioY.DouyinSession import DouyinSession
+from StudioY.StudioYClient import get_account_id_and_cookie
 
 
 class AwemeCollectionRequest:

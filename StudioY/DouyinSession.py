@@ -4,7 +4,7 @@ from urllib.parse import unquote, quote
 
 from requests.cookies import RequestsCookieJar
 
-from src.StudioY.StudioYClient import get_account_id_and_cookie, StudioYClient
+from StudioY.StudioYClient import get_account_id_and_cookie, StudioYClient
 
 
 def _cookie_dict_to_str(cookie: dict) -> str:

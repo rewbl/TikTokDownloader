@@ -1,10 +1,10 @@
 import re
 from unittest import IsolatedAsyncioTestCase
 
-from src.DouyinEndpoints.AwemeCollectionPrivateApi import AwemeCollection
-from src.StudioY.DouyinSession import DouyinSession
-from src.StudioY.StudioYClient import StudioYClient
-from src.StudioY.SyncBookmarks import AwemeCollectionRecipient
+from DouyinEndpoints import AwemeCollection
+from StudioY.DouyinSession import DouyinSession
+from StudioY.StudioYClient import StudioYClient
+from StudioY.SyncBookmarks import AwemeCollectionRecipient
 from datetime import datetime
 
 client = StudioYClient()

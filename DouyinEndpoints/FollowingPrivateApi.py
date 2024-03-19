@@ -2,9 +2,9 @@ import asyncio
 from typing import Any, List
 from unittest import TestCase, IsolatedAsyncioTestCase
 
-from src.DouyinEndpoints.EndpointBase import EndpointBase, Encrypter
-from src.Infrastructure.Database.MainDouyinMongoDb import DouyinDb
-from src.StudioY.StudioYClient import get_account_id_and_cookie
+from DouyinEndpoints.EndpointBase import EndpointBase, Encrypter
+from MainDouyinMongoDb import DouyinDb
+from StudioY.StudioYClient import get_account_id_and_cookie
 
 import time
 from motor.motor_asyncio import AsyncIOMotorCollection

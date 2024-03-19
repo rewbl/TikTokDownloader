@@ -4,8 +4,8 @@ from unittest import IsolatedAsyncioTestCase
 import requests
 from pydantic import BaseModel
 
-from src.DouyinEndpoints.AwemeCollectionPrivateApi import  AwemeCollection
-from src.StudioY.DouyinSession import DouyinSession
+from DouyinEndpoints import  AwemeCollection
+from StudioY.DouyinSession import DouyinSession
 
 
 class DouyinAuthorDto(BaseModel):

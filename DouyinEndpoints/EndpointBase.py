@@ -1,6 +1,6 @@
 from requests import request, exceptions
 
-from src.Infrastructure.encrypt import XBogus
+from Parameter import XBogus
 
 
 class Encrypter:
