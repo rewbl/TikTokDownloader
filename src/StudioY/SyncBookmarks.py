@@ -67,9 +67,12 @@ def sync_bookmark(accountId, input: List[FavoriteVideoDto]) -> Result:
 class AwemeCollectionRecipient:
 
     account_id: str = None
+    no_added_page_total: int = 0
+    max_no_added_page = 3
 
     def __init__(self, account_id: str = None):
         self.account_id = account_id
+        self.no_added_page_total = 0
 
 
     def on_aweme_collection(self, aweme_list: List[Dict]) -> bool:
@@ -92,7 +95,12 @@ class AwemeCollectionRecipient:
         added_total = result.Data['addedTotal']
         updated_total = result.Data['updatedTotal']
         print(f"Added {added_total} and updated {updated_total} bookmarks")
-        return bool(added_total + updated_total)
+
+        self.no_added_page_total = 0 if added_total else self.no_added_page_total + 1
+        has_any = bool(added_total + updated_total)
+        can_have_more_no_added_pages = self.no_added_page_total < self.max_no_added_page
+        can_continue = has_any and can_have_more_no_added_pages
+        return can_continue
 
 class TestSyncBookmarks2(IsolatedAsyncioTestCase):
     async def test_sync_bookmark(self):

@@ -157,7 +157,6 @@ class FollowingPrivateApi(EndpointBase):
                     self.collection_api,
                     params=params,
                 )):
-            self.log.warning("获取账号收藏数据失败")
             return FollowingResponse.from_dict({})
         # nicenames = [r['nickname'] for r in data['followings']]
 
@@ -355,3 +354,4 @@ class TestFollowingList(IsolatedAsyncioTestCase):
             private_user_id = await FollowListCandidates.get_next()
             following_list = FollowingList(private_user_id, cookie)
             await following_list.load_full_list()
+
