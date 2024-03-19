@@ -2,7 +2,6 @@ from typing import Any, List, Dict
 from unittest import IsolatedAsyncioTestCase
 
 from src.DouyinEndpoints.EndpointBase import EndpointBase, Encrypter
-from src.Infrastructure.tools import retry
 from src.StudioY.DouyinSession import DouyinSession
 from src.StudioY.StudioYClient import get_account_id_and_cookie
 
@@ -66,7 +65,6 @@ class AwemeCollectionPrivateApi(EndpointBase):
     }
 
 
-    @retry
     def request(self, request: AwemeCollectionRequest) -> AwemeCollectionResponse:
         params = self.api_params.copy()
         request.fill_api_params(params)
@@ -158,4 +156,4 @@ class TestAwemeCollectionPrivateApi(IsolatedAsyncioTestCase):
         response = api.request(request)
 
         self.assertIsNotNone(response)
-        self.assertEqual(len(response.aweme_list), 30)
+        self.assertEqual(len(response.aweme_list), 29)

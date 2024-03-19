@@ -1,9 +1,6 @@
 from requests import request, exceptions
 
-from src.Infrastructure.custom import wait
 from src.Infrastructure.encrypt import XBogus
-from src.StudioY.DouyinSession import pass_to_cookie_test
-from src.config.RuntimeParameters import RuntimeCoreParameters
 
 
 class Encrypter:
@@ -12,8 +9,6 @@ class Encrypter:
         if ms_token:
             params["msToken"] = ms_token
         params["X-Bogus"] = XBogus().get_x_bogus(params, number)
-
-
 
 
 class EndpointBase:
@@ -26,15 +21,12 @@ class EndpointBase:
             "Cookie": cookie
         }
 
-
-
-
     def send_request(
             self,
             url: str,
             params=None,
             data=None,
-            method='get',) -> dict | bool:
+            method='get', ) -> dict | bool:
         try:
             response = request(
                 method,
@@ -62,5 +54,3 @@ class EndpointBase:
                 # self.log.warning("响应内容为空，可能是接口失效或者 Cookie 失效，请尝试更新 Cookie")
                 ...
             return False
-
-

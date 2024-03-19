@@ -5,7 +5,6 @@ from unittest import TestCase, IsolatedAsyncioTestCase
 from src.DouyinEndpoints.EndpointBase import EndpointBase, Encrypter
 from src.Infrastructure.Database.MainDouyinMongoDb import DouyinDb
 from src.StudioY.StudioYClient import get_account_id_and_cookie
-from src.config.AppConfig import create_test_core_params
 
 import time
 from motor.motor_asyncio import AsyncIOMotorCollection
