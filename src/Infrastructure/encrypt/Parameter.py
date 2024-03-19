@@ -11,8 +11,12 @@ from requests import exceptions
 from requests import post
 from rich import print
 
-from src.Infrastructure.custom import ERROR
-from src.Infrastructure.custom import X_BOGUS_CODE
+X_BOGUS_CODE = (
+    (147, 136,),
+    (80, 235,),
+    (170, 197,),
+)
+
 
 __all__ = ['XBogus', 'MsToken', 'TtWid', 'VerifyFp']
 HEADERS = {
@@ -21,19 +25,6 @@ HEADERS = {
 RETRY = 3
 
 
-def retry(function):
-    def inner(*args, **kwargs):
-        if r := function(*args, **kwargs):
-            return r
-        for _ in range(RETRY):
-            if r := function(*args, **kwargs):
-                return r
-        return r
-
-    return inner
-
-
-@retry
 def send_request(url: str, headers: dict, data: str):
     try:
         return post(url, data=data, timeout=10, headers=headers)
@@ -330,7 +321,7 @@ class TtWid:
                 temp = c.split("; ")[0].split("=", 1)
                 return {temp[0]: temp[1]}
             except IndexError:
-                print(f"[{ERROR}]获取 {name} 参数失败！[/{ERROR}]")
+                ...
 
 
 class WebID:
@@ -346,7 +337,7 @@ class WebID:
                 return response.json().get("web_id")
             raise KeyError
         except (exceptions.JSONDecodeError, KeyError):
-            print(f"[{ERROR}]获取 webid 参数失败！[/{ERROR}]")
+            ...
 
 
 class VerifyFp:
