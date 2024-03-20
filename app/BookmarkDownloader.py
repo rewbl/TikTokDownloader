@@ -58,6 +58,6 @@ def download_recent_videos(short_code):
 
 class TestSyncAndDownload(IsolatedAsyncioTestCase):
     async def test_sync_bookmark(self):
-        account_code = 'DF2'
+        account_code = 'DF1'
         await async_bookmark(account_code)
         download_recent_videos(account_code)

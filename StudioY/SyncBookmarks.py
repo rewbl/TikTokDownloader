@@ -15,6 +15,16 @@ class DouyinAuthorDto(BaseModel):
     AvatarThumbUrl: Optional[str] = None
     Nickname: Optional[str] = None
 
+    @staticmethod
+    def from_dict(author: dict) -> 'DouyinAuthorDto':
+        return DouyinAuthorDto(
+            Uid=author['uid'],
+            SecUid=author['sec_uid'],
+            Nickname=author['nickname'],
+            AvatarUrl=author.get('avatar_larger', {}).get('url_list', [None])[0],
+            AvatarThumbUrl=author.get('avatar_thumb', {}).get('url_list', [None])[0]
+        )
+
 
 class FavoriteVideoDto(BaseModel):
     Author: Optional[DouyinAuthorDto] = None
@@ -32,6 +42,27 @@ class FavoriteVideoDto(BaseModel):
     CommentCount: Optional[int] = None
     DiggCount: Optional[int] = None
     ShareCount: Optional[int] = None
+
+    @staticmethod
+    def from_dict(aweme: dict) -> 'FavoriteVideoDto':
+        cover_urls = aweme.get('video', {}).get('cover', {}).get('url_list', [])
+        return FavoriteVideoDto(
+            Author=DouyinAuthorDto.from_dict(aweme.get('author', {})),
+            AwemeId=aweme['aweme_id'],
+            Caption=aweme['caption'],
+            Description=aweme['desc'],
+            Height=aweme['video']['height'],
+            Width=aweme['video']['width'],
+            Duration=aweme['video']['duration'],
+            CoverUrl=cover_urls[1] if len(cover_urls) > 1 else cover_urls[0] if len(cover_urls) > 0 else '',
+            Ratio=aweme.get('video', {}).get('ratio', 0),
+            BestBitRateUrl=aweme['video']['bit_rate'][0]['play_addr']['url_list'][-1],
+            CreateTime=aweme['create_time'],
+            CollectCount=aweme['statistics']['collect_count'],
+            CommentCount=aweme['statistics']['comment_count'],
+            DiggCount=aweme['statistics']['digg_count'],
+            ShareCount=aweme['statistics']['share_count']
+        )
 
 
 T = TypeVar('T')
@@ -64,8 +95,8 @@ def sync_bookmark(accountId, input: List[FavoriteVideoDto]) -> Result:
 
     return result
 
-class AwemeCollectionRecipient:
 
+class AwemeCollectionRecipient:
     account_id: str = None
     no_added_page_total: int = 0
     max_no_added_page = 3
@@ -73,7 +104,6 @@ class AwemeCollectionRecipient:
     def __init__(self, account_id: str = None):
         self.account_id = account_id
         self.no_added_page_total = 0
-
 
     def on_aweme_collection(self, aweme_list: List[Dict]) -> bool:
 
@@ -83,7 +113,7 @@ class AwemeCollectionRecipient:
         input = []
         for aweme in aweme_list or []:
             try:
-                dto = create_video_dto(aweme)
+                dto = FavoriteVideoDto.from_dict(aweme)
                 input.append(dto)
             except Exception as e:
                 print(e)
@@ -102,6 +132,7 @@ class AwemeCollectionRecipient:
         can_continue = has_any and can_have_more_no_added_pages
         return can_continue
 
+
 class TestSyncBookmarks2(IsolatedAsyncioTestCase):
     async def test_sync_bookmark(self):
         session = DouyinSession('J1')
@@ -109,34 +140,3 @@ class TestSyncBookmarks2(IsolatedAsyncioTestCase):
         collection = AwemeCollection(AwemeCollectionRecipient(session.account_id), session)
         await collection.load_full_list()
         breakpoint()
-
-def create_author_dto(author) -> DouyinAuthorDto:
-    return DouyinAuthorDto(
-        Uid=author['uid'],
-        SecUid=author['sec_uid'],
-        Nickname=author['nickname'],
-        AvatarUrl=author.get('avatar_larger', {}).get('url_list', [None])[0],
-        AvatarThumbUrl=author.get('avatar_thumb', {}).get('url_list', [None])[0]
-    )
-
-
-def create_video_dto(aweme) -> FavoriteVideoDto:
-    cover_urls = aweme.get('video', {}).get('cover', {}).get('url_list', [])
-    return FavoriteVideoDto(
-        Author=create_author_dto(aweme.get('author', {})),
-        AwemeId=aweme['aweme_id'],
-        Caption=aweme['caption'],
-        Description=aweme['desc'],
-        Height=aweme['video']['height'],
-        Width=aweme['video']['width'],
-        Duration=aweme['video']['duration'],
-        CoverUrl=cover_urls[1] if len(cover_urls) > 1 else cover_urls[0] if len(cover_urls) > 0 else '',
-        Ratio=aweme.get('video', {}).get('ratio', 0),
-        BestBitRateUrl=aweme['video']['bit_rate'][0]['play_addr']['url_list'][-1],
-        CreateTime=aweme['create_time'],
-        CollectCount=aweme['statistics']['collect_count'],
-        CommentCount=aweme['statistics']['comment_count'],
-        DiggCount=aweme['statistics']['digg_count'],
-        ShareCount=aweme['statistics']['share_count']
-    )
-
