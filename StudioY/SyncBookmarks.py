@@ -76,7 +76,7 @@ class Result(Generic[T]):
 
 
 def sync_bookmark(accountId, input: List[FavoriteVideoDto]) -> Result:
-    url = f"https://localhost:44358/api/bookmarks/sync?accountId={accountId}"
+    url = f"https://tta.rewbl.us/api/bookmarks/sync?accountId={accountId}"
 
     headers = {
         'Content-Type': 'application/json',
@@ -107,8 +107,8 @@ class AwemeCollectionRecipient:
 
     def on_aweme_collection(self, aweme_list: List[Dict]) -> bool:
 
-        if not aweme_list:
-            breakpoint()
+        # if not aweme_list:
+        #     breakpoint()
 
         input = []
         for aweme in aweme_list or []:
@@ -135,7 +135,7 @@ class AwemeCollectionRecipient:
 
 class TestSyncBookmarks2(IsolatedAsyncioTestCase):
     async def test_sync_bookmark(self):
-        session = DouyinSession('J1')
+        session = DouyinSession('DF1')
         session.load_session()
         collection = AwemeCollection(AwemeCollectionRecipient(session.account_id), session)
         await collection.load_full_list()
