@@ -76,7 +76,7 @@ class Result(Generic[T]):
 
 
 def sync_bookmark(accountId, input: List[FavoriteVideoDto]) -> Result:
-    url = f"https://tta.rewbl.us/api/bookmarks/sync?accountId={accountId}"
+    url = f"https://eu1.tta.rewbl.us/api/bookmarks/sync?accountId={accountId}"
 
     headers = {
         'Content-Type': 'application/json',

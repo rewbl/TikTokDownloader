@@ -5,7 +5,7 @@ import json
 
 
 class StudioYClient:
-    def __init__(self, base_url='https://tta.rewbl.us/api'):
+    def __init__(self, base_url='https://eu1.tta.rewbl.us/api'):
         self.base_url = base_url
 
     def get_cookie(self, account_id):
