@@ -7,8 +7,8 @@ from app.BookmarkDownloader import async_bookmark, download_recent_videos
 
 
 async def main():
-    accounts = ['DF1', 'DF2', 'J1', 'J2', 'J3', 'BH1', 'DF3', 'DF4', 'DF5', 'BL1']
-    # accounts = ['J1']
+    accounts = ['DF1', 'DF2', 'J1', 'J2', 'J3', 'BH1', 'DF3', 'DF4', 'DF5', 'BL1', 'DF6']
+    accounts = ['DF4']
     while True:
         start_time = time.time()
 
