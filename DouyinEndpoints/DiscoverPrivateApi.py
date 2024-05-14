@@ -1,13 +1,20 @@
+import asyncio
 import json
+import time
 from typing import Any, List, Dict
 from unittest import IsolatedAsyncioTestCase
 
 import urllib3
+from motor.motor_asyncio import AsyncIOMotorCollection
+from pymongo import UpdateOne
 
 from DouyinEndpoints.EndpointBase import EndpointBase, Encrypter
+from MainDouyinMongoDb import DouyinDb
 from StudioY.DouyinSession import DouyinSession
 from StudioY.StudioYClient import get_account_id_and_cookie
+
 urllib3.disable_warnings()
+
 
 class DiscoverRequest:
     ...
@@ -36,6 +43,26 @@ class DiscoverResponse:
         ...
 
 
+class NewDiscoveredAwemeList:
+    def __init__(self, aweme_list):
+        self.aweme_list: List[dict] = aweme_list or []
+
+    async def save(self):
+        if not self.aweme_list:
+            return
+
+        collection: AsyncIOMotorCollection = DouyinDb.douyin_discovers_raw
+        operations = []
+        for aweme in self.aweme_list:
+            aweme['_update_time'] = int(time.time())
+            operations.append(UpdateOne(
+                {'_id': aweme['aweme_id']},
+                {'$set': aweme},
+                upsert=True
+            ))
+        await collection.bulk_write(operations)
+
+
 class DiscoverPrivateApi(EndpointBase):
     collection_api = "https://www.douyin.com/aweme/v1/web/module/feed/"
     api_params = {
@@ -61,13 +88,24 @@ class DiscoverPrivateApi(EndpointBase):
 class IDiscoversRecipient:
     aweme_ids = set()
 
-    def on_aweme_collection(self, aweme_list: List[Dict]) -> bool:
-        old_len = len(self.aweme_ids)
+    async def on_aweme_collection(self, aweme_list: List[Dict]) -> bool:
+        new_aweme_list = [aweme for aweme in aweme_list if aweme['aweme_id'] not in self.aweme_ids]
+        new_percent = len(new_aweme_list) / len(aweme_list) * 100 if aweme_list else 0
+        new_percent_text = f'{new_percent:.2f}' if new_percent else '0'
         self.aweme_ids.update([aweme['aweme_id'] for aweme in aweme_list])
-        new_len = len(self.aweme_ids)
-        new_percent = (new_len - old_len) / len(aweme_list) * 100 if aweme_list else 0
-        print(f'{len(self.aweme_ids)}, {len(aweme_list)}, {new_percent}')
-        return bool(aweme_list)
+        new_discovered_aweme_list = NewDiscoveredAwemeList(new_aweme_list)
+        await new_discovered_aweme_list.save()
+        print(f'{len(self.aweme_ids)}, {len(aweme_list)}, {new_percent_text}')
+        return True
+
+
+async def load_existing_aweme_ids_from_database():
+    collection: AsyncIOMotorCollection = DouyinDb.douyin_discovers_raw
+    cursor = collection.find({}, {'_id': 1})
+    aweme_ids = set()
+    async for document in cursor:
+        aweme_ids.add(document['_id'])
+    return aweme_ids
 
 
 class Discovers:
@@ -111,7 +149,9 @@ class Discovers:
         self.__load_complete = not self.__last_response.has_more
 
         if self.recipient:
-            self.__can_continue = self.recipient.on_aweme_collection(self.__last_response.aweme_list)
+            self.__can_continue = await self.recipient.on_aweme_collection(self.__last_response.aweme_list)
+        if not self.__last_response.aweme_list:
+            await asyncio.sleep(10)
 
     @property
     def __can_retry(self):
@@ -140,5 +180,7 @@ class TestDiscoverPrivateApi(IsolatedAsyncioTestCase):
     async def test_run(self):
         session = DouyinSession('DF1')
         session.load_session()
-        discovers = Discovers(IDiscoversRecipient(), session)
+        recipient = IDiscoversRecipient()
+        recipient.aweme_ids = await load_existing_aweme_ids_from_database()
+        discovers = Discovers(recipient, session)
         await discovers.load_full_list()

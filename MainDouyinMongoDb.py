@@ -13,6 +13,6 @@ class MainDouyinMongoDb:
         self.douyin_follow_list_candidates = self.db['douyin_users_follow_no_lists_view']
         self.douyin_follow_view = self.db['douyin_users_follow_view']
 
-
+        self.douyin_discovers_raw = self.db['douyin_discovers_raw']
 
 DouyinDb = MainDouyinMongoDb()
