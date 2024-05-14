@@ -1,91 +1,72 @@
+import json
 from typing import Any, List, Dict
 from unittest import IsolatedAsyncioTestCase
+
+import urllib3
 
 from DouyinEndpoints.EndpointBase import EndpointBase, Encrypter
 from StudioY.DouyinSession import DouyinSession
 from StudioY.StudioYClient import get_account_id_and_cookie
-
+urllib3.disable_warnings()
 
 class DiscoverRequest:
     ...
-    cursor: str
 
     def fill_api_params(self, params):
-        params["cursor"] = self.cursor
-
-    def __init__(self, cursor: str = None):
-        self.cursor = cursor
+        ...
 
 
 class DiscoverResponse:
     confirmed_success: bool
-    cursor: str
     raw_data: Any
     aweme_list: list[dict]
     has_more: int
     status_code: int
 
-    def __init__(self, cursor: str = None, raw_data: Any = None, aweme_list: list[dict] = None,
-                 has_more: int = None, status_code: int = None):
-        self.cursor = cursor
-        self.raw_data = raw_data
-        self.aweme_list = aweme_list or []
-        self.has_more = has_more
-        self.status_code = status_code
-        self.confirm_success = False
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'DiscoverResponse':
-        result = DiscoverResponse()
-        result.raw_data = obj
-        result.cursor = obj.get("cursor")
-        result.aweme_list = obj.get("aweme_list")
-        result.has_more = obj.get("has_more")
-        result.status_code = obj.get("status_code")
-        return result
-
-    @property
-    def confirmed_success(self):
-        return 'aweme_list' in self.raw_data and 'has_more' in self.raw_data
+    def __init__(self, raw_data: Dict | None):
+        self.raw_data = raw_data or {}
+        self.status_code = raw_data.get('status_code')
+        self.has_more = raw_data.get('has_more')
+        self.cards = raw_data.get('cards')
+        self.confirmed_success = self.status_code == 0 and self.has_more == 1 and self.cards
+        if not self.confirmed_success:
+            self.aweme_list = []
+            return
+        self.aweme_list = [json.loads(card['aweme']) for card in self.cards]
+        ...
 
 
 class DiscoverPrivateApi(EndpointBase):
-    collection_api = "https://www.douyin.com/aweme/v1/web/aweme/listcollection/"  # 收藏API
+    collection_api = "https://www.douyin.com/aweme/v1/web/module/feed/"
     api_params = {
         "device_platform": "webapp",
         "aid": "6383",
         "channel": "channel_pc_web",
-        "publish_video_strategy_type": "2",
-        "pc_client_type": "1",
-        "version_code": "170400",
-        "version_name": "17.4.0",
-        "cookie_enabled": "true",
-        "platform": "PC",
-        "downlink": "10",
+        'module_id': '3003101',
+        'count': '120'
     }
-
 
     def request(self, request: DiscoverRequest) -> DiscoverResponse:
         params = self.api_params.copy()
         request.fill_api_params(params)
-        Encrypter.encrypt_request(params, 'msToken', 8)
-        form = {
-            "count": "30",
-            "cursor": request.cursor,
-        }
         if not (
                 data := self.send_request(
                     self.collection_api,
                     params=params,
-                    data=form,
-                    method='post')):
-            self.log.warning("获取账号收藏数据失败")
-            return DiscoverResponse.from_dict({})
-        return DiscoverResponse.from_dict(data)
+                    method='get')):
+            return DiscoverResponse({})
+        return DiscoverResponse(data)
 
 
 class IDiscoversRecipient:
+    aweme_ids = set()
+
     def on_aweme_collection(self, aweme_list: List[Dict]) -> bool:
+        old_len = len(self.aweme_ids)
+        self.aweme_ids.update([aweme['aweme_id'] for aweme in aweme_list])
+        new_len = len(self.aweme_ids)
+        new_percent = (new_len - old_len) / len(aweme_list) * 100 if aweme_list else 0
+        print(f'{len(self.aweme_ids)}, {len(aweme_list)}, {new_percent}')
         return bool(aweme_list)
 
 
@@ -121,8 +102,7 @@ class Discovers:
 
     @property
     def __next_page_request(self) -> DiscoverRequest:
-        cursor = self.__last_response.cursor if self.__last_response else None
-        self.__last_request = DiscoverRequest(cursor=cursor)
+        self.__last_request = DiscoverRequest()
         return self.__last_request
 
     async def __process_success_response(self):
@@ -156,4 +136,9 @@ class TestDiscoverPrivateApi(IsolatedAsyncioTestCase):
         response = api.request(request)
 
         self.assertIsNotNone(response)
-        self.assertEqual(len(response.aweme_list), 29)
+
+    async def test_run(self):
+        session = DouyinSession('DF1')
+        session.load_session()
+        discovers = Discovers(IDiscoversRecipient(), session)
+        await discovers.load_full_list()
