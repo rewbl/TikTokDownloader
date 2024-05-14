@@ -3,9 +3,12 @@ import os
 import shutil
 import time
 
+import urllib3
+
 from DouyinEndpoints.FollowingPrivateApi import FollowListCandidates, FollowingList
 from StudioY.StudioYClient import get_account_id_and_cookie
 from app.BookmarkDownloader import async_bookmark, download_recent_videos
+urllib3.disable_warnings()
 
 
 async def main():
