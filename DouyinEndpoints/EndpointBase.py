@@ -13,13 +13,14 @@ class Encrypter:
 
 class EndpointBase:
 
-    def __init__(self, cookie: str):
+    def __init__(self, cookie: str, proxy = None):
         super().__init__()
         self.PC_headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             "Referer": "https://www.douyin.com/",
             "Cookie": cookie
         }
+        self.proxy = proxy
 
     def send_request(
             self,
@@ -34,15 +35,9 @@ class EndpointBase:
                 params=params,
                 headers=self.PC_headers,
                 data=data,
+                proxies=self.proxy,
                 verify=False)
-        except (
-                exceptions.ProxyError,
-                exceptions.SSLError,
-                exceptions.ChunkedEncodingError,
-                exceptions.ConnectionError,
-        ):
-            return False
-        except exceptions.ReadTimeout:
+        except Exception as e:
             return False
         try:
             return response.json()

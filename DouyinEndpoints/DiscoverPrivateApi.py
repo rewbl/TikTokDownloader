@@ -72,6 +72,11 @@ class DiscoverPrivateApi(EndpointBase):
         'module_id': '3003101',
         'count': '120'
     }
+    def __init__(self, cookie: str):
+        proxy = {
+            "http": "http://zengboling:Supers8*@bj.tc.9zma.com:2808",
+        }
+        super().__init__(cookie, proxy)
 
     def request(self, request: DiscoverRequest) -> DiscoverResponse:
         params = self.api_params.copy()
