@@ -42,9 +42,10 @@ async def async_bookmark(account_code):
 
 def _create_filename(v):
     author = v['douyinUser']['nickname']
+    auther = author[:10]
     time = datetime.fromtimestamp(v['createTime'])
     time_str = f'{time.month}月{time.day}日 {time.hour}时{time.minute}分'
-    caption = v['caption'][:50]
+    caption = v['caption'][:40]
     awemeId = v['awemeId']
 
     filename = f"{time_str}-【{author}】-{caption}-{awemeId}.mp4"
