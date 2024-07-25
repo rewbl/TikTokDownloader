@@ -1,4 +1,6 @@
-from typing import Optional
+import html
+import json
+from typing import Optional, Tuple, List, Dict
 
 from pydantic import BaseModel
 
@@ -58,3 +60,38 @@ class FavoriteVideoDto(BaseModel):
             DiggCount=aweme['statistics']['digg_count'],
             ShareCount=aweme['statistics']['share_count']
         )
+
+    def sanitize_text(self, text: str) -> str:
+        return html.escape(text)
+
+    def notification_summary(self) -> Tuple[str, List[Dict]]:
+        sanitized_caption = self.sanitize_text(self.Caption)
+        sanitized_nickname = self.sanitize_text(self.Author.Nickname)
+        sanitized_description = self.sanitize_text(self.Description)
+        text = f'*{sanitized_nickname}* 发布了视频：*{sanitized_description}* *{sanitized_caption}*'
+        blocks = [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": f'*{sanitized_nickname}* 发布了视频： \n*{sanitized_description}* \n *{sanitized_caption}* \n *封面图片地址：*'
+                }
+            },
+            # {
+            #     "type": "image",
+            #     "image_url": self.CoverUrl,
+            #     "alt_text": "封面图片"
+            # },
+            {
+                "type": "section",
+                "text": {"type":"mrkdwn", "text": self.CoverUrl}
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": f'<{self.BestBitRateUrl}|点击查看视频>'
+                }
+            }
+        ]
+        return text, blocks

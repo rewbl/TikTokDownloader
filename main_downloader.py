@@ -11,7 +11,8 @@ urllib3.disable_warnings()
 
 async def main():
     accounts = ['DF1', 'DF2', 'J1', 'J2', 'J3', 'BH1', 'DF3', 'DF4', 'DF5', 'BL1', 'DF6','BH2']
-    accounts = ['DF5']
+    accounts = ['DF1', 'DF2', 'BH1', 'DF3', 'DF4', 'DF5', 'BL1', 'DF6','BH2']
+    # accounts = ['DF5']
     while True:
         start_time = time.time()
 
@@ -26,7 +27,7 @@ async def main():
         end_time = time.time()
         execution_time = end_time - start_time
         print(f"Execution time: {execution_time} seconds")
-        sleep_time = max(900 - execution_time, 0)
+        sleep_time = max(600 - execution_time, 0)
         await asyncio.sleep(sleep_time)
 
 if __name__ == '__main__':

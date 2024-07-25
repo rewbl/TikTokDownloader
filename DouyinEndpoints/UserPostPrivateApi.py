@@ -1,15 +1,15 @@
 import asyncio
 import time
-from typing import Any, List, Dict
+from datetime import datetime
+from typing import Any, List, Dict, Tuple
 from unittest import IsolatedAsyncioTestCase
+import pandas as pd
 
 import urllib3
-from motor.motor_asyncio import AsyncIOMotorCollection
-from pymongo import UpdateOne
 
 from DouyinEndpoints.EndpointBase import EndpointBase
-from MainDouyinMongoDb import DouyinDb
-from StudioY.DouyinSession import DouyinSession
+from Slack.SlackDouyinMonitor import send_slack_notification
+from StudioY.FavoriteVideoDto import FavoriteVideoDto
 
 urllib3.disable_warnings()
 
@@ -17,12 +17,14 @@ urllib3.disable_warnings()
 class UserPostRequest:
     sec_user_id: str
 
-    def __init__(self, sec_user_id: str = None):
+    def __init__(self, sec_user_id: str = None, name: str = None):
         self.sec_user_id = sec_user_id
+        self.name = name
 
-    def fill_api_params(self, params):
+    def fill_api_params(self, params, ts):
         params["sec_user_id"] = self.sec_user_id
-
+        params["ts"] = str(ts)
+        params["_rticket"] = str(ts * 1000)
 
 
 class UserPostResponse:
@@ -38,79 +40,223 @@ class UserPostResponse:
         self.has_more = raw_data.get('has_more')
         self.aweme_list = raw_data.get('aweme_list', [])
         self.confirmed_success = self.status_code == 0 and self.has_more == 1 and self.aweme_list
+        self.video_list = [FavoriteVideoDto.from_dict(video) for video in self.aweme_list]
         ...
 
 
-class NewDiscoveredAwemeList:
-    def __init__(self, aweme_list):
-        self.aweme_list: List[dict] = aweme_list or []
+class UserPostVideos:
+    sec_user_id: str
+    name: str
+    existing_videos: dict
 
-    async def save(self):
-        if not self.aweme_list:
-            return
+    def __init__(self, name, sec_user_id):
+        self.name = name
+        self.sec_user_id = sec_user_id
+        self.existing_videos = {}
 
-        collection: AsyncIOMotorCollection = DouyinDb.douyin_discovers_raw
-        operations = []
-        for aweme in self.aweme_list:
-            aweme['_update_time'] = int(time.time())
-            operations.append(UpdateOne(
-                {'_id': aweme['aweme_id']},
-                {'$set': aweme},
-                upsert=True
-            ))
-        await collection.bulk_write(operations)
+    def update(self, videos) -> List[FavoriteVideoDto]:
+        new_videos = []
+        initial_count = len(self.existing_videos)
+        for video in videos:
+            if video.AwemeId in self.existing_videos:
+                self.existing_videos[video.AwemeId] = video
+                continue
+            new_videos.append(video)
+            self.existing_videos[video.AwemeId] = video
+
+        # return new_videos
+        return new_videos if initial_count else []
 
 
 class UserPostPrivateApi(EndpointBase):
-    collection_api = "https://www.douyin.com/aweme/v1/web/aweme/post/"
+    collection_api = "https://api.amemv.com/aweme/v1/aweme/post/"
     api_params = {
-        "device_platform": "webapp",
-        "aid": "6383",
-        "channel": "channel_pc_web",
-        'sec_user_id': '',
-        'count': '10'
+        "device_platform": "android",
+        "aid": "2955",
+        "channel": "carplay_xiaoai_2955",
+        'sec_user_id': 'MS4wLjABAAAAJurvgyuY9p9WsHR69YSChOQvhVNEXvGKV_7BFO6zpWgttg2H2zLgnykIh3q6oVry',
+        'count': '10',
+        'max_cursor': '0',
+        'ts': '1721199394',
+        'app_type': 'lite',
+        'os_api': '25',
+        'device_type': 'PCRT00',
+        'ssmix': 'a',
+        'manifest_version_code': '9901504',
+        'dpi': '240',
+        'version_code': '9901504',
+        'app_name': 'aweme',
+        'version_name': '9.9.15',
+        'device_id': '5827988420182290',
+        'is_autoplay': 'true',
+        'resolution': '720*1208',
+        'os_version': '7.1.2',
+        'language': 'zh',
+        'device_brand': 'OPPO',
+        'ac': 'wifi',
+        'update_version_code': '9901504',
+        'minor_status': '0',
+        '_rticket': '1721199394273'
     }
 
     def __init__(self, cookie: str):
         proxy = {
-            "http": "http://zengboling:Supers8*@bj.tc.9zma.com:2808",
+            # "http": "http://zengboling:Supers8*@bj.tc.9zma.com:2808",
+            "http": "http://107.173.30.188:2808",
         }
-        proxy={}
+        # proxy = {}
         super().__init__(cookie, proxy)
 
     def request(self, request: UserPostRequest) -> UserPostResponse:
+        current_time = int(time.time())
         params = self.api_params.copy()
-        request.fill_api_params(params)
+        request.fill_api_params(params, current_time)
+        headers = {
+            'User-Agent': 'okhttp/3.14.9',
+            'X-Khronos': str(current_time),
+        }
         if not (
                 data := self.send_request(
                     self.collection_api,
                     params=params,
-                    method='get')):
+                    method='get',
+                    proxy=self.proxy,
+                    headers=headers)):
             return UserPostResponse({})
         return UserPostResponse(data)
 
+    async def request_async(self, request: UserPostRequest) -> UserPostResponse:
+        current_time = int(time.time())
+        params = self.api_params.copy()
+        request.fill_api_params(params, current_time)
+        headers = {
+            'User-Agent': 'okhttp/3.14.9',
+            'X-Khronos': str(current_time),
+        }
+        async with Semaphore():
+            if not (
+                    data := await self.send_request_async(
+                        self.collection_api,
+                        params=params,
+                        method='get',
+                        headers=headers)):
+                return UserPostResponse({})
+            return UserPostResponse(data)
+
+
+class MonitorUsers:
+    users: List[Tuple[str, str]]
+
+    def __init__(self, path: str):
+        df = pd.read_excel(path)
+        df.columns = [col.strip() for col in df.columns]
+        selected_df = df[df['Selected'] == 1]
+        self.users = list(selected_df[['Nickname', 'SecUid']].itertuples(index=False, name=None))
+
+
+class TestMonitorUsers(IsolatedAsyncioTestCase):
+
+    async def test_run(self):
+        monitor = MonitorUsers('c:\\temp\\test\\DouyinUsers.xlsx')
+        print(monitor.users)
+
+
+class Semaphore:
+    _instance = None
+    MAX = 10  # Maximum concurrency
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super(Semaphore, cls).__new__(cls)
+            cls._instance._semaphore = asyncio.Semaphore(cls.MAX)
+        return cls._instance
+
+    async def __aenter__(self):
+        await self._semaphore.acquire()
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        self._semaphore.release()
+
+
+class SingleUserNewPostMonitor:
+    user: UserPostVideos
+    check_interval_seconds = 15
+    api: UserPostPrivateApi
+
+    def __init__(self, user: UserPostVideos):
+        self.user = user
+        self.api = UserPostPrivateApi('')
+
+    async def check_forever(self):
+        while True:
+            start_time = time.time()
+            try:
+                await self.check()
+            except Exception as e:
+                print(e)
+            finally:
+                await asyncio.sleep(self.check_interval_seconds - (time.time() - start_time))
+
+    async def check(self):
+        start = datetime.now()
+        request = UserPostRequest(sec_user_id=self.user.sec_user_id)
+        response = await self.api.request_async(request)
+        total_ms = (datetime.now() - start).total_seconds() * 1000
+        if not response.confirmed_success:
+            print(f'Failed to get new videos for {self.user.name}. request ms: {total_ms}')
+            return
+        video_count = len(response.video_list)
+
+        new_videos = self.user.update(response.video_list)
+        if not new_videos:
+            print(f'Got {video_count} videos for {self.user.name}. request ms: {total_ms}')
+            return
+
+        print(f'Got {len(new_videos)} new videos out of {video_count} for {self.user.name}. request ms: {total_ms}')
+        for video in new_videos:
+            await self.notify_new_video(video)
+
+    async def notify_new_video(self, video: FavoriteVideoDto):
+        text, blocks = video.notification_summary()
+        if await send_slack_notification('vivian', text, blocks):
+            print(f'Notified new video: {text}')
+
+
+class DouyinPostMonitor:
+    def __init__(self):
+        users = MonitorUsers('c:\\temp\\test\\DouyinUsers.xlsx').users
+        self.monitors = [SingleUserNewPostMonitor(UserPostVideos(name, secUid)) for name, secUid in users]
+
+    async def run(self):
+        for monitor in self.monitors:
+            asyncio.create_task(monitor.check_forever())
+        while True:
+            await asyncio.sleep(60)
+
+
+class TestDouyinPostMonitor(IsolatedAsyncioTestCase):
+
+    async def test_run(self):
+        monitor = DouyinPostMonitor()
+        await monitor.run()
+
 
 class IUserPostsRecipient:
-    aweme_ids = set()
+    users: Dict[str, UserPostVideos]
 
-    async def on_aweme_collection(self, aweme_list: List[Dict]) -> bool:
-        new_aweme_list = [aweme for aweme in aweme_list if aweme['aweme_id'] not in self.aweme_ids]
-        new_percent = len(new_aweme_list) / len(aweme_list) * 100 if aweme_list else 0
-        new_percent_text = f'{new_percent:.2f}' if new_percent else '0'
-        self.aweme_ids.update([aweme['aweme_id'] for aweme in aweme_list])
-        new_discovered_aweme_list = NewDiscoveredAwemeList(new_aweme_list)
-        await new_discovered_aweme_list.save()
-        print(f'{len(self.aweme_ids)}, {len(aweme_list)}, {new_percent_text}')
+    def __init__(self):
+        self.users = {}
+
+    async def on_aweme_collection(self, sec_user_id, videos: List[FavoriteVideoDto]) -> bool:
+        user_videos = self.users[sec_user_id]
+        print(f'{len(videos)} videos')
+        new_videos = user_videos.update(videos)
+        if not new_videos:
+            return True
+
+        for video in new_videos:
+            print(f'New video: {video.Caption}')
         return True
-
-
-async def load_existing_aweme_ids_from_database():
-    collection: AsyncIOMotorCollection = DouyinDb.douyin_discovers_raw
-    cursor = collection.find({}, {'_id': 1})
-    aweme_ids = set()
-    async for document in cursor:
-        aweme_ids.add(document['_id'])
-    return aweme_ids
 
 
 class UserPosts:
@@ -120,10 +266,12 @@ class UserPosts:
     __can_continue: bool
     __load_complete: bool
 
-    def __init__(self, recipient: IUserPostsRecipient = None, session: DouyinSession = None):
+    users: List[UserPostVideos]
+
+    def __init__(self, cookie: str, recipient: IUserPostsRecipient, users: List[UserPostVideos] = None):
         self.recipient = recipient
-        self.session = session
-        self.api = UserPostPrivateApi(session.cookie)
+        self.users = users or []
+        self.api = UserPostPrivateApi(cookie)
         self.__last_request = None
         self.__last_response = None
         self.__can_continue = True
@@ -131,9 +279,10 @@ class UserPosts:
         self.__last_retry = 0
         self.__has_error = False
 
-    async def load_full_list(self):
+    async def load_forever(self):
         while self.__can_continue and not self.__load_complete:
             await self.__load_next_page()
+            await asyncio.sleep(0.1)
 
     async def __load_next_page(self):
         self.__last_response = self.api.request(self.__next_page_request)
@@ -145,7 +294,9 @@ class UserPosts:
 
     @property
     def __next_page_request(self) -> UserPostRequest:
-        self.__last_request = UserPostRequest()
+        user = self.users.pop(0)
+        self.users.append(user)
+        self.__last_request = UserPostRequest(sec_user_id=user.sec_user_id, name=user.name)
         return self.__last_request
 
     async def __process_success_response(self):
@@ -153,14 +304,14 @@ class UserPosts:
         self.__last_success_response = self.__last_response
         self.__load_complete = not self.__last_response.has_more
 
-        if self.recipient:
-            self.__can_continue = await self.recipient.on_aweme_collection(self.__last_response.aweme_list)
-        if not self.__last_response.aweme_list:
-            await asyncio.sleep(10)
+        if not self.recipient:
+            return
+        self.__can_continue = await self.recipient.on_aweme_collection(
+            self.__last_request.sec_user_id, self.__last_response.video_list)
 
     @property
     def __can_retry(self):
-        return self.__last_retry < 3
+        return self.__last_retry < 300000
 
     async def __process_failed_response(self):
         if not self.__can_retry:
@@ -171,20 +322,36 @@ class UserPosts:
         self.__last_retry += 1
 
 
+class RealtimeDouyinVideo:
+    account_name: str
+    video: FavoriteVideoDto
+
+    def __init__(self, account_name: str, video: FavoriteVideoDto):
+        self.account_name = account_name
+        self.video = video
+
+
 class TestUserPostPrivateApi(IsolatedAsyncioTestCase):
 
     def test_request(self):
         cookie = "sid_guard=ded517612c83805ebbf388683f567493%7C1720686079%7C5183999%7CMon%2C+09-Sep-2024+08%3A21%3A18+GMT"
-        secUid="MS4wLjABAAAAHyBRERXouUs-9dY2s2isiuF7qgZKbs-JRW16zxkReCM"
-        api = UserPostPrivateApi(cookie)
+        secUid = "MS4wLjABAAAAHyBRERXouUs-9dY2s2isiuF7qgZKbs-JRW16zxkReCM"
+        api = UserPostPrivateApi('')
         request = UserPostRequest(secUid)
         response = api.request(request)
         self.assertIsNotNone(response)
 
     async def test_run(self):
-        session = DouyinSession('DF1')
-        session.load_session()
+        cookie = "sid_guard=ded517612c83805ebbf388683f567493%7C1720686079%7C5183999%7CMon%2C+09-Sep-2024+08%3A21%3A18+GMT"
+        secUid = "MS4wLjABAAAAHyBRERXouUs-9dY2s2isiuF7qgZKbs-JRW16zxkReCM"
+        users = [UserPostVideos("douyin1", secUid)]
         recipient = IUserPostsRecipient()
-        recipient.aweme_ids = await load_existing_aweme_ids_from_database()
-        discovers = UserPosts(recipient, session)
-        await discovers.load_full_list()
+        recipient.users = {secUid: users[0]}
+        userPosts = UserPosts(cookie, recipient, users)
+        await userPosts.load_forever()
+
+    async def test_monitor(self):
+        user = UserPostVideos("douyin1", "MS4wLjABAAAAHyBRERXouUs-9dY2s2isiuF7qgZKbs-JRW16zxkReCM")
+        monitor = SingleUserNewPostMonitor(user)
+        asyncio.create_task(monitor.check_forever())
+        await asyncio.sleep(65)
