@@ -8,6 +8,7 @@ import pandas as pd
 import urllib3
 
 from DouyinEndpoints.EndpointBase import EndpointBase
+from FileDownload.DouyinFileDownloadServiceClient import DouyinFileDownloadServiceClient
 from Slack.SlackDouyinMonitor import send_slack_notification
 from StudioY.FavoriteVideoDto import FavoriteVideoDto
 
@@ -163,7 +164,7 @@ class TestMonitorUsers(IsolatedAsyncioTestCase):
 
 class Semaphore:
     _instance = None
-    MAX = 10  # Maximum concurrency
+    MAX = 30  # Maximum concurrency
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -180,7 +181,7 @@ class Semaphore:
 
 class SingleUserNewPostMonitor:
     user: UserPostVideos
-    check_interval_seconds = 15
+    check_interval_seconds = 20
     api: UserPostPrivateApi
 
     def __init__(self, user: UserPostVideos):
@@ -220,6 +221,10 @@ class SingleUserNewPostMonitor:
         text, blocks = video.notification_summary()
         if await send_slack_notification('vivian', text, blocks):
             print(f'Notified new video: {text}')
+        try:
+            DouyinFileDownloadServiceClient().start_download_file(video.BestBitRateUrl, video.Author.Nickname)
+        except Exception as e:
+            print(e)
 
 
 class DouyinPostMonitor:
@@ -230,6 +235,7 @@ class DouyinPostMonitor:
     async def run(self):
         for monitor in self.monitors:
             asyncio.create_task(monitor.check_forever())
+            await asyncio.sleep(0.1)
         while True:
             await asyncio.sleep(60)
 
