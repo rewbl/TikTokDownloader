@@ -29,7 +29,7 @@ notification_channel_ids = {
     'bohai': 'C07ENV8L5CG',
 }
 
-SLACK_BOT_TOKEN = 'xoxb-4202093198051-7466607161910-xKUIUNtXsvpCR7eNjasPK3yn'
+SLACK_BOT_TOKEN = 'zengbolingxoxb-4202093198051-7466607161910-xKUIUNtXsvpCR7eNjasPK3yn'
 client = AsyncWebClient(token=SLACK_BOT_TOKEN)
 
 

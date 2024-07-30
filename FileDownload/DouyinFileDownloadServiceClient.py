@@ -24,7 +24,7 @@ class DouyinFileDownloadServiceClient(object):
 
     async def download_file(self, video_url, nickname):
         server_url = "http://h8.9zma.com:8099/"
-        time_str = datetime.now().strftime("%H时%M分%S秒")
+        time_str = datetime.now().strftime("%H-%M-%S")
         filename = f'{nickname[:40]}-{time_str}.mp4'
         filename = re.sub(r'[\\/*?:"<>|#\n\r]', '', filename)
         folder = "C:\\Users\\Admin\\Nox_share\\ImageShare\\"
