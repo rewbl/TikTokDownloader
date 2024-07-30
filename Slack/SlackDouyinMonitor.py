@@ -29,7 +29,7 @@ notification_channel_ids = {
     'bohai': 'C07ENV8L5CG',
 }
 
-SB = 'xoxb-4202093198051-7466607161910-xKUIUNtXsvpCR7eNjasPK3yn'
+SB = ''
 client = AsyncWebClient(token=SB)
 
 
@@ -62,3 +62,4 @@ async def send_slack_notification(name, message=None, blocks=None) -> bool:
 class Test(IsolatedAsyncioTestCase):
     async def test_send_slack_notification(self):
         self.assertTrue(await send_slack_notification('general', 'Hello, this is a async test message!'))
+#xoxb-4202093198051-7466607161910-xKUIUNtXsvpCR7eNjasPK3yn
