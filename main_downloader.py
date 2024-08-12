@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 async def main():
     accounts = ['DF1', 'DF2', 'J1', 'J2', 'J3', 'BH1', 'DF3', 'DF4', 'DF5', 'BL1', 'DF6','BH2']
     accounts = ['DF1', 'DF2', 'BH1', 'DF3', 'DF4', 'DF5', 'BL1', 'DF6','BH2']
-    # accounts = ['DF5']
+    accounts = ['DF6']
     while True:
         start_time = time.time()
 

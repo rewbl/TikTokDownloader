@@ -49,10 +49,12 @@ class UserPostVideos:
     sec_user_id: str
     name: str
     existing_videos: dict
+    remote_video_folder: str
 
-    def __init__(self, name, sec_user_id):
+    def __init__(self, name, sec_user_id, remote_video_folder=None):
         self.name = name
         self.sec_user_id = sec_user_id
+        self.remote_video_folder = remote_video_folder
         self.existing_videos = {}
 
     def update(self, videos) -> List[FavoriteVideoDto]:
@@ -146,13 +148,13 @@ class UserPostPrivateApi(EndpointBase):
 
 
 class MonitorUsers:
-    users: List[Tuple[str, str]]
+    users: List[Tuple[str, str, str]]
 
     def __init__(self, path: str):
         df = pd.read_excel(path)
         df.columns = [col.strip() for col in df.columns]
         selected_df = df[df['Selected'] == 1]
-        self.users = list(selected_df[['Nickname', 'SecUid']].itertuples(index=False, name=None))
+        self.users = list(selected_df[['Nickname', 'SecUid', 'Folder']].itertuples(index=False, name=None))
 
 
 class TestMonitorUsers(IsolatedAsyncioTestCase):
@@ -222,7 +224,8 @@ class SingleUserNewPostMonitor:
         if await send_slack_notification('vivian', text, blocks):
             print(f'Notified new video: {text}')
         try:
-            DouyinFileDownloadServiceClient().start_download_file(video.BestBitRateUrl, video.Author.Nickname)
+            DouyinFileDownloadServiceClient()\
+                .start_download_file(video.BestBitRateUrl, video.Author.Nickname, self.user.remote_video_folder)
         except Exception as e:
             print(e)
 
@@ -230,7 +233,9 @@ class SingleUserNewPostMonitor:
 class DouyinPostMonitor:
     def __init__(self):
         users = MonitorUsers('c:\\temp\\test\\DouyinUsers.xlsx').users
-        self.monitors = [SingleUserNewPostMonitor(UserPostVideos(name, secUid)) for name, secUid in users]
+        self.monitors = [SingleUserNewPostMonitor(UserPostVideos(name, secUid, folder))
+                         for name, secUid, folder in users]
+        pass
 
     async def run(self):
         for monitor in self.monitors:
