@@ -23,12 +23,12 @@ class DouyinFileDownloadServiceClient(object):
         except Exception as e:
             return False
 
-    async def download_file(self, video_url, nickname):
-        server_url = "http://ha8d.9zma.com:8099/"
+    async def download_file(self, video_url, nickname, remote_folder):
+        server_url = "http://h8.9zma.com:8099/"
         time_str = datetime.now().strftime("%d %H_%M_%S")
         filename = f'{nickname[:40]}-{time_str}.mp4'
         filename = re.sub(r'[\\/*?:"<>|#\n\r]', '', filename)
-        folder = "C:\\Users\\Admin\\Nox_share\\ImageShare\\"
+        folder = remote_folder or "C:\\Users\\Admin\\Nox_share\\ImageShare\\监控\\"
         local_dir = f"{folder}{filename}"
         start = datetime.now()
         success = await self.download_file_remotely(server_url, video_url, local_dir)
@@ -38,8 +38,8 @@ class DouyinFileDownloadServiceClient(object):
         else:
             print(f"Failed to download: {local_dir}")
 
-    def start_download_file(self, video_url, nickname):
-        asyncio.create_task(self.download_file(video_url, nickname))
+    def start_download_file(self, video_url, nickname, remote_folder=None):
+        asyncio.create_task(self.download_file(video_url, nickname, remote_folder))
 
 class TestDouyinFileDownloadServiceClient(IsolatedAsyncioTestCase):
     async def test(self):
