@@ -154,6 +154,7 @@ class MonitorUsers:
         df = pd.read_excel(path)
         df.columns = [col.strip() for col in df.columns]
         selected_df = df[df['Selected'] == 1]
+        selected_df = selected_df.fillna('')
         self.users = list(selected_df[['Nickname', 'SecUid', 'Folder']].itertuples(index=False, name=None))
 
 
