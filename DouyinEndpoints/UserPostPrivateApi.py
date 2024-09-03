@@ -107,7 +107,7 @@ class UserPostPrivateApi(EndpointBase):
             # "http": "http://zengboling:Supers8*@bj.tc.9zma.com:2808",
             "http": "http://107.173.30.188:2808",
         }
-        # proxy = {}
+        proxy = {}
         super().__init__(cookie, proxy)
 
     def request(self, request: UserPostRequest) -> UserPostResponse:

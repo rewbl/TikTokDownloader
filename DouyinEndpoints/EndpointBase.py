@@ -59,7 +59,7 @@ class EndpointBase:
             url: str,
             params=None,
             method='get',
-            data = None,
+            data=None,
             headers=None) -> dict | bool:
         try:
             async with aiohttp.ClientSession() as session:
@@ -68,6 +68,7 @@ class EndpointBase:
                         url,
                         params=params,
                         data=data,
+                        proxy=self.proxy.get('http',''),
                         headers=headers or self.PC_headers) as response:
                     try:
                         return await response.json()
