@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Any, List, Dict, Tuple
 from unittest import IsolatedAsyncioTestCase
 import pandas as pd
+import pytz
 
 import urllib3
 
@@ -182,6 +183,31 @@ class Semaphore:
         self._semaphore.release()
 
 
+
+
+def is_skip_time():
+    # Define the timezones for California and Beijing
+    california_tz = pytz.timezone('America/Los_Angeles')
+    beijing_tz = pytz.timezone('Asia/Shanghai')
+
+    # Get the current time in both California and Beijing timezones
+    california_time = datetime.now(california_tz).time()
+    beijing_time = datetime.now(beijing_tz).time()
+
+    # Check if it's skip time in California (10 PM to 7 AM)
+    if california_time >= datetime.strptime("22:00", "%H:%M").time() or california_time < datetime.strptime("07:00",
+                                                                                                            "%H:%M").time():
+        return True
+
+    # Check if it's skip time in Beijing (2 AM to 7 AM)
+    if datetime.strptime("02:00", "%H:%M").time() <= beijing_time < datetime.strptime("07:00",
+                                                                                      "%H:%M").time():
+        return True
+
+    # Return False if neither condition is met
+    return False
+
+
 class SingleUserNewPostMonitor:
     user: UserPostVideos
     check_interval_seconds = 20
@@ -193,6 +219,10 @@ class SingleUserNewPostMonitor:
 
     async def check_forever(self):
         while True:
+            if is_skip_time():
+                await asyncio.sleep(60)
+                continue
+
             start_time = time.time()
             try:
                 await self.check()
