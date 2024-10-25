@@ -43,8 +43,8 @@ class DouyinFileDownloadServiceClient(object):
 
 class TestDouyinFileDownloadServiceClient(IsolatedAsyncioTestCase):
     async def test(self):
-        server_url='http://ha8d.9zma.com:8099/'
-        localDir = 'C:\\Users\\Admin\\Nox_share\\ImageShare\\1.mp4'
+        server_url='http://h8.9zma.com:8099/'
+        localDir = 'C:\\Users\\Admin\\Nox_share\\ImageShare\\监控\\1.mp4'
         video_url='https://api-hl.amemv.com/aweme/v1/play/?video_id=v0d00fg10000cqkv6jvog65s0qrcb0m0&line=1&file_id=d24baa0efc194c65b7733eea4cbcf24e&sign=cd38c5d23949913249314650070c2de3&is_play_url=1&source=PackSourceEnum_PUBLISH'
         await DouyinFileDownloadServiceClient().download_file_remotely(server_url, video_url, localDir)
 

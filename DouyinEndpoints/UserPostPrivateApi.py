@@ -186,6 +186,7 @@ class Semaphore:
 
 
 def is_skip_time():
+    return False
     # Define the timezones for California and Beijing
     california_tz = pytz.timezone('America/Los_Angeles')
     beijing_tz = pytz.timezone('Asia/Shanghai')

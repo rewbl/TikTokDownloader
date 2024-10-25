@@ -4,7 +4,8 @@ from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.errors import SlackApiError
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-
+import ssl
+import certifi
 # Name: general, ID: C045HJ72M9D
 # Name: random, ID: C045Y582RV0
 # Name: spk, ID: C0460JKNA04
@@ -29,8 +30,11 @@ notification_channel_ids = {
     'bohai': 'C07ENV8L5CG',
 }
 
-SB = 'xoxb-4202093198051-7466607161910-xKUIUNtXsvpCR7eNjasPK3yn'
-client = AsyncWebClient(token=SB)
+SB = ''
+ssl_context = ssl.create_default_context()
+ssl_context.check_hostname = False
+ssl_context.verify_mode = ssl.CERT_NONE
+client = AsyncWebClient(token=SB, ssl=ssl_context)
 
 
 async def list_channels():
