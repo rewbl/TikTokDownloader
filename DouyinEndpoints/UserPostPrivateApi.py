@@ -19,14 +19,17 @@ urllib3.disable_warnings()
 class UserPostRequest:
     sec_user_id: str
 
-    def __init__(self, sec_user_id: str = None, name: str = None):
+    def __init__(self, sec_user_id: str = None, name: str = None, max_cursor: str = None):
         self.sec_user_id = sec_user_id
         self.name = name
+        self.max_cursor = max_cursor
 
     def fill_api_params(self, params, ts):
         params["sec_user_id"] = self.sec_user_id
         params["ts"] = str(ts)
         params["_rticket"] = str(ts * 1000)
+        if self.max_cursor:
+            params["max_cursor"] = self.max_cursor
 
 
 class UserPostResponse:
@@ -80,7 +83,7 @@ class UserPostPrivateApi(EndpointBase):
         "channel": "carplay_xiaoai_2955",
         'sec_user_id': 'MS4wLjABAAAAJurvgyuY9p9WsHR69YSChOQvhVNEXvGKV_7BFO6zpWgttg2H2zLgnykIh3q6oVry',
         'count': '10',
-        'max_cursor': '0',
+        'max_cursor': '1737680701000',
         'ts': '1721199394',
         'app_type': 'lite',
         'os_api': '25',
@@ -234,15 +237,15 @@ class SingleUserNewPostMonitor:
 
     async def check(self):
         start = datetime.now()
-        request = UserPostRequest(sec_user_id=self.user.sec_user_id)
-        response = await self.api.request_async(request)
+        video_list = await self.__get_video_list()
         total_ms = (datetime.now() - start).total_seconds() * 1000
-        if not response.confirmed_success:
+        if not video_list:
             print(f'Failed to get new videos for {self.user.name}. request ms: {total_ms}')
             return
-        video_count = len(response.video_list)
 
-        new_videos = self.user.update(response.video_list)
+        video_count = len(video_list)
+
+        new_videos = self.user.update(video_list)
         if not new_videos:
             print(f'Got {video_count} videos for {self.user.name}. request ms: {total_ms}')
             return
@@ -250,6 +253,23 @@ class SingleUserNewPostMonitor:
         print(f'Got {len(new_videos)} new videos out of {video_count} for {self.user.name}. request ms: {total_ms}')
         for video in new_videos:
             await self.notify_new_video(video)
+
+    async def __get_video_list(self):
+        request = UserPostRequest(sec_user_id=self.user.sec_user_id)
+        response = await self.api.request_async(request)
+        if not response.confirmed_success:
+            return []
+
+        video_count = len(response.video_list)
+        if video_count > 3:
+            return response.video_list
+
+        max_cursor = response.raw_data.get('max_cursor')
+        request = UserPostRequest(sec_user_id=self.user.sec_user_id, max_cursor=max_cursor)
+        response = await self.api.request_async(request)
+        if not response.confirmed_success:
+            return []
+        return response.video_list
 
     async def notify_new_video(self, video: FavoriteVideoDto):
         text, blocks = video.notification_summary()
@@ -260,6 +280,7 @@ class SingleUserNewPostMonitor:
                 .start_download_file(video.BestBitRateUrl, video.Author.Nickname, self.user.remote_video_folder)
         except Exception as e:
             print(e)
+
 
 
 class DouyinPostMonitor:
@@ -376,17 +397,17 @@ class RealtimeDouyinVideo:
 
 class TestUserPostPrivateApi(IsolatedAsyncioTestCase):
 
-    def test_request(self):
+    async def test_request(self):
         cookie = "sid_guard=ded517612c83805ebbf388683f567493%7C1720686079%7C5183999%7CMon%2C+09-Sep-2024+08%3A21%3A18+GMT"
-        secUid = "MS4wLjABAAAAHyBRERXouUs-9dY2s2isiuF7qgZKbs-JRW16zxkReCM"
+        secUid = "MS4wLjABAAAArwLl9tigxT8lVYgp1Hav-eZglxlLFFdHO7zOte_uNjk"
         api = UserPostPrivateApi('')
         request = UserPostRequest(secUid)
-        response = api.request(request)
+        response = await api.request_async(request)
         self.assertIsNotNone(response)
 
     async def test_run(self):
         cookie = "sid_guard=ded517612c83805ebbf388683f567493%7C1720686079%7C5183999%7CMon%2C+09-Sep-2024+08%3A21%3A18+GMT"
-        secUid = "MS4wLjABAAAAHyBRERXouUs-9dY2s2isiuF7qgZKbs-JRW16zxkReCM"
+        secUid = "MS4wLjABAAAArwLl9tigxT8lVYgp1Hav-eZglxlLFFdHO7zOte_uNjk"
         users = [UserPostVideos("douyin1", secUid)]
         recipient = IUserPostsRecipient()
         recipient.users = {secUid: users[0]}
@@ -394,7 +415,7 @@ class TestUserPostPrivateApi(IsolatedAsyncioTestCase):
         await userPosts.load_forever()
 
     async def test_monitor(self):
-        user = UserPostVideos("douyin1", "MS4wLjABAAAAHyBRERXouUs-9dY2s2isiuF7qgZKbs-JRW16zxkReCM")
+        user = UserPostVideos("douyin1", "MS4wLjABAAAArwLl9tigxT8lVYgp1Hav-eZglxlLFFdHO7zOte_uNjk")
         monitor = SingleUserNewPostMonitor(user)
         asyncio.create_task(monitor.check_forever())
         await asyncio.sleep(65)
