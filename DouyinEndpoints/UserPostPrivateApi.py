@@ -419,3 +419,8 @@ class TestUserPostPrivateApi(IsolatedAsyncioTestCase):
         monitor = SingleUserNewPostMonitor(user)
         asyncio.create_task(monitor.check_forever())
         await asyncio.sleep(65)
+
+if __name__ == "__main__":
+    import asyncio
+    monitor = DouyinPostMonitor()
+    asyncio.run(monitor.run())
