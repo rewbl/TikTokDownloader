@@ -5,8 +5,8 @@ from unittest import IsolatedAsyncioTestCase
 import urllib3
 
 from DouyinEndpoints.EndpointBase import EndpointBase
-from DouyinEndpoints.Posts.DouyinPostMonitor import DouyinPostMonitor
-from DouyinEndpoints.Posts.SingleUserNewPostMonitor import SingleUserNewPostMonitor
+from PostMonitor.DouyinPostMonitor import DouyinPostMonitor
+from PostMonitor.SingleUserNewPostMonitor import SingleUserNewPostMonitor
 from DouyinEndpoints.Posts.UserPostRequest import UserPostRequest
 from DouyinEndpoints.Posts.UserPostResponse import UserPostResponse
 from DouyinEndpoints.Posts.UserPostVideos import UserPostVideos

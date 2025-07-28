@@ -1,8 +1,8 @@
 import asyncio
 from unittest import IsolatedAsyncioTestCase
 
-from DouyinEndpoints.Posts.MonitorUsers import MonitorUsers
-from DouyinEndpoints.Posts.SingleUserNewPostMonitor import SingleUserNewPostMonitor
+from PostMonitor.MonitorUsers import MonitorUsers
+from PostMonitor.SingleUserNewPostMonitor import SingleUserNewPostMonitor
 from DouyinEndpoints.Posts.UserPostVideos import UserPostVideos
 
 
