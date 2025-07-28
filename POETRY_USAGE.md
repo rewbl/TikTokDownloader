@@ -89,7 +89,22 @@ poetry publish
 - **数据处理**: pandas 2.3.1, numpy 2.3.2
 - **数据库**: pymongo 4.13.2, motor 3.7.1
 - **AWS**: boto3 1.35.99
+- **私有包**: 99notion-base 0.1.5 (从私有 PyPI 源)
 - **其他**: slack-sdk 3.36.0, qrcode 8.2, lxml 5.4.0
+
+### 私有 PyPI 源配置
+
+项目配置了私有 PyPI 源来安装 `99notion-base` 包：
+
+- **源名称**: private-pypi
+- **URL**: https://pypi.9zma.com/simple/
+- **优先级**: primary
+
+使用方法：
+```python
+import notion_base  # 导入 99notion-base 包
+print(notion_base.__version__)  # 查看版本
+```
 
 ## 迁移说明
 
