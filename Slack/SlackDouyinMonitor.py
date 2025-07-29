@@ -69,7 +69,7 @@ message_text = 'Hello, this is a message from the bot! Here is a link http://www
 def download_video(video_url: str) -> str:
     try:
         # 创建临时文件
-        time_str = datetime.now().strftime("%d_%H_%M_%S")
+        time_str = datetime.now().strftime("%d_%H_%M_%S_%f")[:-3]  # 去掉微秒的最后3位，只保留毫秒
         filename = f'{time_str}.mp4'
 
         temp_dir = tempfile.gettempdir()
