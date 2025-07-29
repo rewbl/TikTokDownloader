@@ -2,14 +2,14 @@
 
 [[package]]
 name = "99notion-base"
-version = "0.1.5"
+version = "0.1.10"
 description = ""
 optional = false
 python-versions = ">=3.11,<4"
 groups = ["main"]
 files = [
-    {file = "99notion_base-0.1.5-py3-none-any.whl", hash = "sha256:2235fde130124964ebd3fe4d54e1a1a2d3eb80543eac47ae9cdfa92682020db0"},
-    {file = "99notion_base-0.1.5.tar.gz", hash = "sha256:73183daa980ae102b0732eed252d45f308594a366d4726c3874641bbbf8f1a02"},
+    {file = "99notion_base-0.1.10-py3-none-any.whl", hash = "sha256:ec065dc19db03a7729e17f33c40e65477980fb425a2380cbda100ed4e0d9e5e7"},
+    {file = "99notion_base-0.1.10.tar.gz", hash = "sha256:71f0d91d2eb4241baff906adfa42bc4a8bc900b3cd2efc9a5a45c1b539a55172"},
 ]
 
 [package.dependencies]

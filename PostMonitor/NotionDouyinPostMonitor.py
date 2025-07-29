@@ -16,6 +16,7 @@ class NotionDouyinPostMonitor:
         self.monitors: Dict[str, SingleUserNewPostMonitor] = {}  # sec_uid -> monitor
         self.monitor_tasks: Dict[str, asyncio.Task] = {}  # sec_uid -> task
         self.account_refresh_interval = 60  # 每分钟刷新一次账号列表
+        self._add_monitor_semaphore = asyncio.Semaphore(10)  # 限制最大并发数为10
 
     async def start(self):
         asyncio.create_task(self._refresh_accounts_loop())
@@ -38,9 +39,12 @@ class NotionDouyinPostMonitor:
         monitoring_sec_uids = set(self.monitors.keys())
         
         to_add = current_sec_uids - monitoring_sec_uids
-        for account in current_accounts:
-            if account['sec_uid'] in to_add:
-                await self._add_monitor(account)
+
+        # 并行添加监控器，但限制最大并发数为10
+        accounts_to_add = [account for account in current_accounts if account['sec_uid'] in to_add]
+        if accounts_to_add:
+            tasks = [self._add_monitor(account) for account in accounts_to_add]
+            await asyncio.gather(*tasks)
 
         to_remove = monitoring_sec_uids - current_sec_uids
         for sec_uid in to_remove:
@@ -53,19 +57,24 @@ class NotionDouyinPostMonitor:
             print(f"账号列表无变化，当前监控 {len(self.monitors)} 个账号")
     
     async def _add_monitor(self, account: Dict[str, str]):
-        sec_uid = account['sec_uid']
-        name = account['name']
-        page_id = account['page_id']
-        
-        try:
-            user_videos = UserPostVideos(name, sec_uid)
-            monitor = SingleUserNewPostMonitor(user_videos, page_id)
-            task = asyncio.create_task(monitor.check_forever())
-            self.monitors[sec_uid] = monitor
-            self.monitor_tasks[sec_uid] = task
-            print(f"已添加账号监控: {name} ({sec_uid})")
-        except Exception as e:
-            print(f"添加账号监控失败 {name}: {e}")
+        # 使用信号量控制并发数量
+        async with self._add_monitor_semaphore:
+            sec_uid = account['sec_uid']
+            name = account['name']
+            page_id = account['page_id']
+
+            try:
+                print(f"开始添加账号监控: {name} ({sec_uid})")
+                user_videos = UserPostVideos(name, sec_uid)
+                monitor = SingleUserNewPostMonitor(user_videos, page_id)
+                task = asyncio.create_task(monitor.check_forever())
+                self.monitors[sec_uid] = monitor
+                self.monitor_tasks[sec_uid] = task
+                print(f"✅ 已添加账号监控: {name} ({sec_uid})")
+            except Exception as e:
+                print(f"❌ 添加账号监控失败 {name}: {e}")
+                import traceback
+                traceback.print_exc()
     
     async def _remove_monitor(self, sec_uid: str):
         try:

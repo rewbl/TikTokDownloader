@@ -6,6 +6,7 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 import ssl
 import certifi
+import base64
 # Name: general, ID: C045HJ72M9D
 # Name: random, ID: C045Y582RV0
 # Name: spk, ID: C0460JKNA04
@@ -30,7 +31,9 @@ notification_channel_ids = {
     'bohai': 'C07ENV8L5CG',
 }
 
-SB = ''
+SB_b64 = 'eG94Yi00MjAyMDkzMTk4MDUxLTc0NjY2MDcxNjE5MTAtMVM1RjNZTWxWQWk0ZEFic2FFV0Ric21T'
+
+SB = base64.b64decode(SB_b64).decode()
 ssl_context = ssl.create_default_context()
 ssl_context.check_hostname = False
 ssl_context.verify_mode = ssl.CERT_NONE

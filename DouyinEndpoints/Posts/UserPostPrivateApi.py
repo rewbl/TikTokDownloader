@@ -91,7 +91,7 @@ class UserPostPrivateApi(EndpointBase):
 
 class Semaphore:
     _instance = None
-    MAX = 30  # Maximum concurrency
+    MAX = 5  # Maximum concurrency
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
