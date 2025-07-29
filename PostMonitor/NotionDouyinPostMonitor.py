@@ -1,31 +1,27 @@
 
 import asyncio
-from typing import Dict, Set
+from typing import Dict, Set, List
 from datetime import datetime
 
+from notion_base import get_database
+
 from DouyinEndpoints.Posts.UserPostVideos import UserPostVideos
-from NotionServices.douyin_account_service import NotionDouyinAccountService
+from PostMonitor.DouyinPostPage import DouyinAccountPage
 from PostMonitor.SingleUserNewPostMonitor import SingleUserNewPostMonitor
 
 
 class NotionDouyinPostMonitor:
 
     def __init__(self):
-        self.account_service = NotionDouyinAccountService()
         self.monitors: Dict[str, SingleUserNewPostMonitor] = {}  # sec_uid -> monitor
         self.monitor_tasks: Dict[str, asyncio.Task] = {}  # sec_uid -> task
         self.account_refresh_interval = 60  # 每分钟刷新一次账号列表
-        self.is_running = False
-    
-    async def start(self):
-        if self.is_running:
-            return
 
-        self.is_running = True
+    async def start(self):
         asyncio.create_task(self._refresh_accounts_loop())
 
     async def _refresh_accounts_loop(self):
-        while self.is_running:
+        while True:
             try:
                 await self._refresh_accounts()
                 await asyncio.sleep(self.account_refresh_interval)
@@ -36,7 +32,7 @@ class NotionDouyinPostMonitor:
     async def _refresh_accounts(self):
         print(f"[{datetime.now().strftime('%H:%M:%S')}] 刷新账号列表...")
         
-        current_accounts = self.account_service.get_monitor_accounts()
+        current_accounts = self.__get_monitor_accounts()
         current_sec_uids = {account['sec_uid'] for account in current_accounts}
         
         monitoring_sec_uids = set(self.monitors.keys())
@@ -63,65 +59,57 @@ class NotionDouyinPostMonitor:
         
         try:
             user_videos = UserPostVideos(name, sec_uid)
-            
             monitor = SingleUserNewPostMonitor(user_videos, page_id)
-            
-            # 启动监控任务
             task = asyncio.create_task(monitor.check_forever())
-            
-            # 保存监控器和任务
             self.monitors[sec_uid] = monitor
             self.monitor_tasks[sec_uid] = task
-            
             print(f"已添加账号监控: {name} ({sec_uid})")
-            
-            # 稍微延迟避免同时启动太多任务
-            await asyncio.sleep(0.1)
-            
         except Exception as e:
             print(f"添加账号监控失败 {name}: {e}")
     
     async def _remove_monitor(self, sec_uid: str):
-        """
-        移除账号监控
-        
-        Args:
-            sec_uid: 账号的SecUid
-        """
         try:
-            # 获取监控器信息
             monitor = self.monitors.get(sec_uid)
             task = self.monitor_tasks.get(sec_uid)
             
             if monitor and task:
                 name = monitor.user.name
-                
-                # 取消任务
                 task.cancel()
                 
-                # 等待任务完成
                 try:
                     await task
                 except asyncio.CancelledError:
                     pass
                 
-                # 移除监控器和任务
                 del self.monitors[sec_uid]
                 del self.monitor_tasks[sec_uid]
-                
                 print(f"已移除账号监控: {name} ({sec_uid})")
-            
         except Exception as e:
             print(f"移除账号监控失败 {sec_uid}: {e}")
     
-    async def run_forever(self):
-        """运行监控器直到手动停止"""
-        await self.start()
-        
+    def __get_monitor_accounts(self) -> List[Dict[str, str]]:
+
         try:
-            while self.is_running:
-                await asyncio.sleep(60)
-        except KeyboardInterrupt:
-            print("收到停止信号...")
-        finally:
-            await self.stop()
+            results = (get_database(DouyinAccountPage.DATABASE_ID)
+                      .where('Tags')
+                      .contains('Monitor Posts')
+                      .where('SecUid')
+                      .is_not_empty()
+                      .where('Name')
+                      .is_not_empty()
+                      .all())
+
+            accounts = []
+            for result in results:
+                page_id = result.get('id') or result.get('page_id')
+                accounts.append({
+                    'page_id': page_id,
+                    'name': result['Name'],
+                    'sec_uid': result['SecUid']
+                })
+
+            return accounts
+
+        except Exception as e:
+            print(f"获取监控账号失败: {e}")
+            return []
