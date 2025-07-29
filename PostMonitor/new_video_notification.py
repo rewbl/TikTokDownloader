@@ -46,7 +46,6 @@ def _handle_new_video_sync(video: FavoriteVideoDto, account_page_id: str, accoun
 
 
 def _send_slack_notification_sync(slack_channel: str, text: str, blocks) -> bool:
-    return
     try:
         import asyncio
         loop = asyncio.new_event_loop()
