@@ -50,7 +50,7 @@ class FavoriteVideoDto(BaseModel):
             Description=aweme['desc'],
             Height=aweme['video']['height'],
             Width=aweme['video']['width'],
-            Duration=aweme['video']['duration'],
+            Duration=aweme['video']['duration'] // 1000,  # 转换毫秒为秒
             CoverUrl=cover_urls[1] if len(cover_urls) > 1 else cover_urls[0] if len(cover_urls) > 0 else '',
             Ratio=aweme.get('video', {}).get('ratio', 0),
             BestBitRateUrl=aweme['video']['bit_rate'][0]['play_addr']['url_list'][-1],

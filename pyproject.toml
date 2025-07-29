@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "TikTok/Douyin video downloader and bookmark manager"
 authors = ["StudioY"]
 readme = "README.md"
-packages = [{include = "app"}, {include = "DouyinEndpoints"}, {include = "FileDownload"}, {include = "StudioY"}, {include = "Slack"}]
+packages = [{include = "app"}, {include = "DouyinEndpoints"}, {include = "FileDownload"}, {include = "StudioY"}, {include = "Slack"}, {include = "PostMonitor"}, {include = "NotionServices"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"

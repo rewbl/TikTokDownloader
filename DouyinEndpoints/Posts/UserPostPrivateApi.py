@@ -22,7 +22,6 @@ class UserPostPrivateApi(EndpointBase):
         "channel": "carplay_xiaoai_2955",
         'sec_user_id': 'MS4wLjABAAAAJurvgyuY9p9WsHR69YSChOQvhVNEXvGKV_7BFO6zpWgttg2H2zLgnykIh3q6oVry',
         'count': '10',
-        'max_cursor': '1737680701000',
         'ts': '1721199394',
         'app_type': 'lite',
         'os_api': '25',

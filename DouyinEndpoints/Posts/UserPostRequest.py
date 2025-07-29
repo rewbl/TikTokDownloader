@@ -10,5 +10,3 @@ class UserPostRequest:
         params["sec_user_id"] = self.sec_user_id
         params["ts"] = str(ts)
         params["_rticket"] = str(ts * 1000)
-        if self.max_cursor:
-            params["max_cursor"] = self.max_cursor
