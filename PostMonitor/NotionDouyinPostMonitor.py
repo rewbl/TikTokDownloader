@@ -34,6 +34,9 @@ class NotionDouyinPostMonitor:
         print(f"[{datetime.now().strftime('%H:%M:%S')}] 刷新账号列表...")
         
         current_accounts = self.__get_monitor_accounts()
+        if not current_accounts:
+            print("没有找到需要监控的账号")
+            return
         current_sec_uids = {account['sec_uid'] for account in current_accounts}
         
         monitoring_sec_uids = set(self.monitors.keys())
