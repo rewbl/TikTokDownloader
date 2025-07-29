@@ -12,6 +12,7 @@ import tempfile
 import aiohttp
 from datetime import datetime
 import re
+
 # Name: general, ID: C045HJ72M9D
 # Name: random, ID: C045Y582RV0
 # Name: spk, ID: C0460JKNA04
@@ -84,7 +85,7 @@ async def download_video_to_temp(video_url: str, nickname: str) -> str:
         temp_dir = tempfile.gettempdir()
         temp_file_path = os.path.join(temp_dir, filename)
         
-        print(f"开始下载视频到临时文件: {temp_file_path}")
+        print(f"开始下载视频: {temp_file_path}")
         
         # 下载视频
         async with aiohttp.ClientSession() as session:
@@ -110,10 +111,6 @@ async def send_slack_notification_with_video(name: str, message: str = None, blo
     """
     temp_file_path = None
     try:
-        # 如果有视频URL，先下载视频
-        if video_url and nickname:
-            temp_file_path = await download_video_to_temp(video_url, nickname)
-        
         # 发送消息
         response = await client.chat_postMessage(
             channel=notification_channel_ids[name],
@@ -121,16 +118,12 @@ async def send_slack_notification_with_video(name: str, message: str = None, blo
             blocks=blocks
         )
         
-        # 如果有下载的视频文件，上传为附件
-        if temp_file_path and os.path.exists(temp_file_path):
-            try:
-                # 获取文件大小
-                file_size = os.path.getsize(temp_file_path)
-                
-                # Slack文件上传限制为50MB
-                if file_size > 50 * 1024 * 1024:
-                    print(f"视频文件过大 ({file_size / 1024 / 1024:.2f}MB)，跳过上传")
-                else:
+        # 如果有视频URL，下载并上传
+        if video_url and nickname:
+            temp_file_path = await download_video_to_temp(video_url, nickname)
+            
+            if temp_file_path and os.path.exists(temp_file_path):
+                try:
                     # 上传文件
                     with open(temp_file_path, 'rb') as file:
                         upload_response = await client.files_upload_v2(
@@ -141,10 +134,10 @@ async def send_slack_notification_with_video(name: str, message: str = None, blo
                             initial_comment="视频附件"
                         )
                     print(f"视频附件上传成功: {upload_response['file']['name']}")
-            except SlackApiError as e:
-                print(f"上传视频附件失败: {e.response['error']}")
-            except Exception as e:
-                print(f"上传视频附件时发生错误: {e}")
+                except SlackApiError as e:
+                    print(f"上传视频附件失败: {e.response['error']}")
+                except Exception as e:
+                    print(f"上传视频附件时发生错误: {e}")
         
         return True
         
@@ -159,22 +152,3 @@ async def send_slack_notification_with_video(name: str, message: str = None, blo
                 print(f"临时文件已清理: {temp_file_path}")
             except Exception as e:
                 print(f"清理临时文件失败: {e}")
-
-
-class Test(IsolatedAsyncioTestCase):
-    async def test_send_slack_notification(self):
-        self.assertTrue(await send_slack_notification('general', 'Hello, this is a async test message!'))
-    
-    async def test_send_slack_notification_with_video(self):
-        # 测试带视频的通知
-        video_url = "https://api-hl.amemv.com/aweme/v1/play/?video_id=v0d00fg10000cqkv6jvog65s0qrcb0m0&line=1&file_id=d24baa0efc194c65b7733eea4cbcf24e&sign=cd38c5d23949913249314650070c2de3&is_play_url=1&source=PackSourceEnum_PUBLISH"
-        nickname = "测试用户"
-        message = "测试带视频附件的通知"
-        
-        result = await send_slack_notification_with_video(
-            'general', 
-            message=message, 
-            video_url=video_url, 
-            nickname=nickname
-        )
-        self.assertTrue(result)

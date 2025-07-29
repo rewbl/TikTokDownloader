@@ -1,6 +1,7 @@
+import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from StudioY.FavoriteVideoDto import FavoriteVideoDto
-from Slack.SlackDouyinMonitor import send_slack_notification
+from Slack.SlackDouyinMonitor import send_slack_notification, send_slack_notification_with_video
 from PostMonitor.douyin_post_service import NotionDouyinPostService
 
 _thread_pool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="video_processor")
@@ -28,8 +29,8 @@ def _handle_new_video_sync(video: FavoriteVideoDto, account_page_id: str, accoun
         # 2. 发送Slack通知（即使失败也不影响主流程）
         try:
             text, blocks = video.notification_summary()
-            # 在线程中运行异步Slack通知
-            success = _send_slack_notification_sync(slack_channel, text, blocks)
+            # 在线程中运行异步Slack通知，包含视频附件
+            success = _send_slack_notification_with_video_sync(slack_channel, text, blocks, video)
 
             if success:
                 print(f"成功发送Slack通知: {video.AwemeId}")
@@ -52,6 +53,32 @@ def _send_slack_notification_sync(slack_channel: str, text: str, blocks) -> bool
         asyncio.set_event_loop(loop)
         try:
             result = loop.run_until_complete(send_slack_notification(slack_channel, text, blocks))
+            return result
+        finally:
+            loop.close()
+    except Exception as e:
+        print(f"同步Slack通知失败: {e}")
+        return False
+
+
+def _send_slack_notification_with_video_sync(slack_channel: str, text: str, blocks, video: FavoriteVideoDto) -> bool:
+    """
+    发送带视频附件的Slack通知（同步版本）
+    """
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            # 使用新的带视频附件的通知函数
+            result = loop.run_until_complete(
+                send_slack_notification_with_video(
+                    slack_channel, 
+                    text, 
+                    blocks, 
+                    video_url=video.BestBitRateUrl,
+                    nickname=video.Author.Nickname
+                )
+            )
             return result
         finally:
             loop.close()
