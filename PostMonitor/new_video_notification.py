@@ -31,7 +31,7 @@ def _handle_new_video_sync(video: FavoriteVideoDto, account_page_id: str, accoun
         try:
             text, blocks = video.notification_summary()
             # 直接使用同步版本的Slack通知
-            success = send_slack_notification_with_video(slack_channel, text, blocks, video)
+            success = send_slack_notification_with_video(slack_channel, text, blocks, video.BestBitRateUrl)
 
             if success:
                 print(f"成功发送Slack通知: {video.AwemeId}")

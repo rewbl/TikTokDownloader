@@ -93,7 +93,7 @@ def download_video(video_url: str) -> str:
 
 
 def send_slack_notification_with_video(name: str, message: str = None, blocks=None,
-                                       video_url: str = None, nickname: str = None) -> bool:
+                                       video_url: str = None) -> bool:
     temp_file_path = None
     try:
         response = sync_client.chat_postMessage(
