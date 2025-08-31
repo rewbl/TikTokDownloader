@@ -113,7 +113,7 @@ class SingleUserNewPostMonitor:
                 video=video,
                 account_page_id=self.account_page_id,
                 account_name=self.user.name,
-                slack_channel='vivian'
+                slack_channel='bohai'
             )
         except Exception as e:
             print(f"处理新视频失败: {e}")

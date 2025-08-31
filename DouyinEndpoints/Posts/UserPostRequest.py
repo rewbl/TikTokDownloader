@@ -5,8 +5,11 @@ class UserPostRequest:
         self.sec_user_id = sec_user_id
         self.name = name
         self.max_cursor = max_cursor
+        self.count = 100
 
     def fill_api_params(self, params, ts):
         params["sec_user_id"] = self.sec_user_id
         params["ts"] = str(ts)
         params["_rticket"] = str(ts * 1000)
+        # params["max_cursor"] = self.max_cursor
+        params["count"] = self.count

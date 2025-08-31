@@ -132,6 +132,8 @@ class TestUserPostPrivateApi(IsolatedAsyncioTestCase):
         api = UserPostPrivateApi('')
         request = UserPostRequest(secUid)
         response = await api.request_async(request)
+        description_list = [video.Description for video in response.video_list]
+        breakpoint()
         self.assertIsNotNone(response)
 
     async def test_run(self):

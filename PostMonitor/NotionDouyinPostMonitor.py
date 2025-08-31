@@ -104,7 +104,7 @@ class NotionDouyinPostMonitor:
         try:
             results = (get_database(DouyinAccountPage.DATABASE_ID)
                       .where('Tags')
-                      .contains('Monitor Posts')
+                      .contains('Monitor Posts 2')
                       .where('SecUid')
                       .is_not_empty()
                       .where('Name')
